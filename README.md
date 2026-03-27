@@ -59,7 +59,7 @@ You need to support the following instructions/syntax:
 4. Logical operations (for all of these, __no exceptions__ are raised)
 
     (On **Adder** unit)
-    - `slt`: Set output bit to 0 if operand 1 < operand 2
+    - `slt`: Set output bit to 1 if operand 1 < operand 2
     - `slti`: Set-less-than with immediate
 
     (On **Logic** unit)
