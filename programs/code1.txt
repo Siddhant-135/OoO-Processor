@@ -1,0 +1,6 @@
+mul x3 x1 x2
+add x5 x3 x4
+add x7 x2 x6
+add x10 x8 x9
+mul x11 x7 x10
+add x5 x5 x11
