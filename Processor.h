@@ -9,6 +9,10 @@
 #include "ExecutionUnit.h"
 #include "LoadStoreQueue.h"
 
+struct Pipeline_reg{
+    Instruction inst;
+};
+
 class Processor {
 private:
 public:
@@ -16,6 +20,8 @@ public:
     int clock_cycle;
 
     // pipeline registers
+    Pipeline_reg F_reg;
+    Pipeline_reg D_reg;
 
     std::vector<Instruction> inst_memory;
 
