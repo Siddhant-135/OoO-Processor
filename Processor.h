@@ -50,7 +50,7 @@ public:
 
     void loadProgram(const std::string& filename) {
         std::ifstream file(filename);
-        if (!file) {throw std::runtime_error("corrupted file")};
+        if (!file) {throw std::runtime_error("corrupted file");};
         std::string line;
         while (std::getline(file, line)) 
         {
