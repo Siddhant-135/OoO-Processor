@@ -37,13 +37,13 @@ struct ROBEntry {
     // other fields as required
     bool valid = false;
     bool ready_from_RS= false;//always ready to go to RS. This is instead bool for "has it received a value from RS" 
+    bool sent_to_RS = true; //if the reservation station was full. Could have to change this and stall the whole pipeline.
     int ROBid; //necessary? SInce we'll be  iterating idts.
     int dest_regId; //just store the dest_regVal. What about memory?
     int dest_regVal;
     int src1;
     int src2;
     OpCode op;
-    //just store the Instruction instead..
 };
 
 struct RSEntry {
