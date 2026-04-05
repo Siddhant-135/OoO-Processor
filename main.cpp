@@ -10,7 +10,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    int max_cycles = -1;
+    int max_cycles = -1; 
     if (argc == 4 && string(argv[2]) == "-cycles") {
         max_cycles = stoi(argv[3]);
     }
@@ -30,6 +30,11 @@ int main(int argc, char* argv[]) {
         cycle_count++;
         if (max_cycles != -1 && cycle_count == max_cycles) {
             cout << "\n[!] Execution halted at cycle limit: " << max_cycles << "\n";
+            break;
+        }
+        else if (max_cycles <0 && cycle_count >= 10,000) // Extra added just as a safeguard, remove for full length functionality. 
+        {
+            cout << "\n[!] Execution halted at 10,000 cycles to prevent bad things from happening, remove from main.cpp " << "\n";
             break;
         }
     }

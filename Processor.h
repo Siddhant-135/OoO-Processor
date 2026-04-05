@@ -9,6 +9,11 @@
 #include "LoadStoreQueue.h"
 
 class Processor {
+private:
+    Instruction lineToInst(std::string line)
+    {
+        
+    }
 public:
     int pc;
     int clock_cycle;
@@ -45,6 +50,14 @@ public:
 
     void loadProgram(const std::string& filename) {
         std::ifstream file(filename);
+        if (!file) {throw std::runtime_error("corrupted file")};
+        std::string line;
+        while (std::getline(file, line)) 
+        {
+            Instruction inst = lineToInst (line);
+            inst_memory.push_back(inst);
+        }
+
     }
 
     void flush() {};
@@ -61,7 +74,12 @@ public:
 
     bool step() {
         clock_cycle++;
-        return true; // return false if CPU has no more to do after this cycle
+        if (exception) 
+        {
+            flush();
+            return false;
+        }
+        else return true; // return false if CPU has no more to do after this cycle
     }
 
     void dumpArchitecturalState() {
