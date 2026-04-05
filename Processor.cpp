@@ -31,9 +31,24 @@ void Processor::flush() {};
 
 void Processor::broadcastOnCDB() {};
 
-void Processor::stageFetch() {};
+void Processor::stageFetch() {
+    pc+=1;
+    //start with pc =-1
+    if(pc>=inst_memory.size()){
+    return;}
+    else{
+        F_reg.inst=inst_memory[pc];
+        //does decode know that something has to be sent to it? And what? Execute the decode of the prev fetch inst before fetching new
+    }
 
-void Processor::stageDecode() {};
+};
+
+void Processor::stageDecode() {
+    //we think decode never stalls.
+
+    //put in reorder buffer. 
+    //reorder buffer at cycle decides if the entry in it is valid or not.
+};
 
 void Processor::stageExecuteAndBroadcast() {};
 

@@ -35,9 +35,23 @@ struct ProcessorConfig {
 struct ROBEntry {
     // valid bit, ready bit, architectural register ID
     // other fields as required
+    bool valid = false;
+    bool ready_from_RS= false;//always ready to go to RS. This is instead bool for "has it received a value from RS" 
+    int ROBid; //necessary? SInce we'll be  iterating idts.
+    int dest_regId; //just store the dest_regVal. What about memory?
+    int dest_regVal;
+    int src1;
+    int src2;
+    OpCode op;
+    //just store the Instruction instead..
 };
 
 struct RSEntry {
     // value, tag, ready ... for both operands
     // other fields as required
+    //3 resevation stations: add, mul, div.
+    bool src1_valid, src2_valid;
+    int src1_tag, src2_tag, src1_value, src2_value;
+    OpCode op;
+    //index of RSEntry?
 };
