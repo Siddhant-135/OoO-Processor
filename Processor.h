@@ -4,16 +4,13 @@
 #include <vector>
 #include <iomanip>
 #include "Basics.h"
+#include "Parser.h"
 #include "BranchPredictor.h"
 #include "ExecutionUnit.h"
 #include "LoadStoreQueue.h"
 
 class Processor {
 private:
-    Instruction lineToInst(std::string line)
-    {
-        
-    }
 public:
     int pc;
     int clock_cycle;
@@ -54,7 +51,7 @@ public:
         std::string line;
         while (std::getline(file, line)) 
         {
-            Instruction inst = lineToInst (line);
+            Instruction inst = Parser::lineToInst (line);
             inst_memory.push_back(inst);
         }
 
