@@ -45,39 +45,21 @@ public:
         // Load-Store Unit
     }
 
-    void loadProgram(const std::string& filename) {
-        std::ifstream file(filename);
-        if (!file) {throw std::runtime_error("corrupted file")};
-        std::string line;
-        while (std::getline(file, line)) 
-        {
-            Instruction inst = Parser::lineToInst (line);
-            inst_memory.push_back(inst);
-        }
+    void loadProgram(const std::string& filename);
 
-    }
+    void flush();
 
-    void flush() {};
+    void broadcastOnCDB();
 
-    void broadcastOnCDB() {};
+    void stageFetch();
 
-    void stageFetch() {};
+    void stageDecode();
 
-    void stageDecode() {};
+    void stageExecuteAndBroadcast();
 
-    void stageExecuteAndBroadcast() {};
+    void stageCommit();
 
-    void stageCommit() {};
-
-    bool step() {
-        clock_cycle++;
-        if (exception) 
-        {
-            flush();
-            return false;
-        }
-        else return true; // return false if CPU has no more to do after this cycle
-    }
+    bool step();
 
     void dumpArchitecturalState() {
         std::cout << "\n=== ARCHITECTURAL STATE (CYCLE " << clock_cycle << ") ===\n";

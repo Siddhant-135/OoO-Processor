@@ -24,5 +24,26 @@ void Processor::loadProgram(const std::string& filename) {
         Instruction inst = lineToInst (line);
         inst_memory.push_back(inst);
     }
+}
 
+void Processor::flush() {};
+
+void Processor::broadcastOnCDB() {};
+
+void Processor::stageFetch() {};
+
+void Processor::stageDecode() {};
+
+void Processor::stageExecuteAndBroadcast() {};
+
+void Processor::stageCommit() {};
+
+bool Processor::step() {
+    clock_cycle++;
+    if (exception) 
+    {
+        flush();
+        return false;
+    }
+    else return true; // return false if CPU has no more to do after this cycle
 }

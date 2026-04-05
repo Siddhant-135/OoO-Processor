@@ -3,5 +3,6 @@
 
 Instruction lineToInst (std::string line)
 {
+    std::istream iss(line);
     
 }
