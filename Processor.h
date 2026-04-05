@@ -8,6 +8,12 @@
 #include "ExecutionUnit.h"
 #include "LoadStoreQueue.h"
 
+struct Pipeline_reg{
+    Instruction inst;
+    bool stall;
+};
+
+
 class Processor {
 private:
     Instruction lineToInst(std::string line)
@@ -19,6 +25,9 @@ public:
     int clock_cycle;
 
     // pipeline registers
+
+    Pipeline_reg F_reg();
+    Pipeline_reg D_reg();
 
     std::vector<Instruction> inst_memory;
 
@@ -33,38 +42,24 @@ public:
     LoadStoreQueue* lsq;
     BranchPredictor bp;
 
-    Processor(ProcessorConfig& config) {
-        pc = 0;
-        clock_cycle = 0;
-        ARF.resize(config.num_regs, 0);
-        Memory.resize(config.mem_size);
+    Processor(ProcessorConfig& config) {};
 
-        // Instantiate Hardware Units
-        // Adder
-        // Multiplier
-        // Divider
-        // Branch Computation
-        // Bitwise Logic
-        // Load-Store Unit
-    }
-
-    void loadProgram(const std::string& filename) {
-        std::ifstream file(filename);
-        if (!file) {throw std::runtime_error("corrupted file");};
-        std::string line;
-        while (std::getline(file, line)) 
-        {
-            Instruction inst = lineToInst (line);
-            inst_memory.push_back(inst);
-        }
-
-    }
+    void loadProgram(const std::string& filename) {};
 
     void flush() {};
 
     void broadcastOnCDB() {};
 
-    void stageFetch() {};
+    void stageFetch() {
+        //handle the stall of a previous decode instruction.
+        if(D_reg.stall)
+        pc ++;
+        //check instruction memory for the presence of instructions, DONE
+        if(pc == inst_memory.size())
+        return;
+        
+        F_reg = inst_memory[pc];
+    };
 
     void stageDecode() {};
 
@@ -73,6 +68,9 @@ public:
     void stageCommit() {};
 
     bool step() {
+    //we dont always have to update the pc though, so PC updation should happen conditionally, in stageFetch.
+        
+
         clock_cycle++;
         if (exception) 
         {
