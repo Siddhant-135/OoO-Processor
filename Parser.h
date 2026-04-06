@@ -4,6 +4,7 @@
 #include <fstream>
 #include <optional>
 #include <string_view>
+#include <string>
 
 class Parser
 {
@@ -12,5 +13,5 @@ class Parser
     Instruction parseFile(std::ifstream& file, std::vector<Instruction>& inst_memory);
     std::vector<std::pair<std::string_view, int>> inst_alias; // holds PC values for jumps in the instruction.
     std::vector<std::pair<std::string_view, int>> mem_alias; // holds memory array name to location mapping
-    int findLocation(std::vector<std::pair<std::string_view, int>>& aliastable);
+    int findLocation(std::vector<std::pair<std::string_view, int>>& aliastable, std::string_view name)
 };
