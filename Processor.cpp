@@ -1,11 +1,12 @@
 #include "Processor.h"
 
-Processor::Processor(ProcessorConfig& config){
+Processor::Processor(ProcessorConfig& config) :myROB(config.rob_size){
     pc = 0;
     clock_cycle = 0;
     ARF.resize(config.num_regs, 0);
     Memory.resize(config.mem_size, 0);
     Parser myparser = Parser();
+    RAT myRAT();
     // Instantiate Hardware Units
     // Adder
     // Multiplier
@@ -32,21 +33,31 @@ void Processor::stageFetch() {
     return;}
     else{
         F_reg.inst=inst_memory[pc];
-        //does decode know that something has to be sent to it? And what? Execute the decode of the prev fetch inst before fetching new
     }
 
 };
 
 void Processor::stageDecode() {
     //we think decode never stalls.
-
-    //put in reorder buffer. 
-    //reorder buffer at cycle decides if the entry in it is valid or not.
+    D_reg.inst = F_reg.inst;
+    if(myROB.is_Full() /*add RAT fulll condition*/){
+        //stall
+        return;
+    }
+    else{
+        myROB.push(D_reg.inst);
+        //push to appropriate reservation station too.
+    }
 };
 
 void Processor::stageExecuteAndBroadcast() {};
 
-void Processor::stageCommit() {};
+void Processor::stageCommit() {
+    int idx = myROB.dest_reg();
+    ARF[idx] = myROB.dest_val();
+    myROB.pop();
+    myRAT.rem_from_RAT(idx);
+};
 
 bool Processor::step() {
     clock_cycle++;

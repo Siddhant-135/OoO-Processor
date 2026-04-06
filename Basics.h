@@ -37,14 +37,8 @@ struct ROBEntry {
     // other fields as required
     bool valid = false;
     bool ready_from_RS= false;//always ready to go to RS. This is instead bool for "has it received a value from RS" 
-    // bool sent_to_RS = true; //if the reservation station was full. Could have to change this and stall the whole pipeline.
-    // // int ROBid; //necessary? SInce we'll be  iterating idts.
     int dest_regId = -1; 
-    int dest_regVal;//just store the dest_regVal. What about memory?
-    // int src1;//can be an id or can be the value
-    // int src2;//can be an id or can be the value
-    std::pair <int, std::string> rsEntry_tag;
-    // OpCode op;
+    int dest_regVal;//just store the dest_regVal. What about memory? NOT IN ROB
 };
 
 struct RSEntry {

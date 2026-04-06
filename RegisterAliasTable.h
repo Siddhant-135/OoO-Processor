@@ -1,4 +1,6 @@
-#include "Processor.h"
+#pragma once
+#include "Basics.h"
+#include <vector>
 
 struct RATEntry{
     //default mapping: validity true, hence Rob column -1
@@ -13,6 +15,7 @@ class RAT{
 
     public:
     //functions: modify ROB at index: addEntry
+    RAT(){};
     void add_to_RAT (int idx, int ROBId);
     //removeEntry: return it to valid and -1
     void rem_from_RAT (int idx);

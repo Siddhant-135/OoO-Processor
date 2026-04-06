@@ -9,6 +9,8 @@
 #include "BranchPredictor.h"
 #include "ExecutionUnit.h"
 #include "LoadStoreQueue.h"
+#include "RegisterAliasTable.h"
+#include "ReorderBuffer.h"
 
 struct Pipeline_reg{
     Instruction inst;
@@ -32,7 +34,8 @@ public:
     bool exception = false; // exception bit
 
     // register alias table / reorder buffer
-
+    ROB myROB;
+    RAT myRAT;
     std::vector<ExecutionUnit> units;
     LoadStoreQueue* lsq;
     BranchPredictor bp;
@@ -40,16 +43,9 @@ public:
     // Parser instance
     Parser myparser;
 
-    Processor(ProcessorConfig& config) {
 
-        // Instantiate Hardware Units
-        // Adder
-        // Multiplier
-        // Divider
-        // Branch Computation
-        // Bitwise Logic
-        // Load-Store Unit
-    }
+
+    Processor(ProcessorConfig& config);
 
     void loadProgram(const std::string& filename);
 
