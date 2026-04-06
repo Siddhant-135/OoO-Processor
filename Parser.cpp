@@ -3,27 +3,27 @@
 
 std::optional<OpCode> Parser::parseOperation(std::string_view first_token)
 {
-    if (first_token == "add") return OpCode::ADD;
-    else if (first_token == "sub") return OpCode::SUB;
-    else if (first_token == "addi") return OpCode::ADDI;
-    else if (first_token == "mul") return OpCode::MUL;
-    else if (first_token == "div") return OpCode::DIV;
-    else if (first_token == "rem") return OpCode::REM;
-    else if (first_token == "lw") return OpCode::LW;
-    else if (first_token == "sw") return OpCode::SW;
-    else if (first_token == "beq") return OpCode::BEQ;
-    else if (first_token == "bne") return OpCode::BNE;
-    else if (first_token == "blt") return OpCode::BLT;
-    else if (first_token == "ble") return OpCode::BLE;
-    else if (first_token == "j") return OpCode::J;
-    else if (first_token == "slt") return OpCode::SLT;
-    else if (first_token == "slti") return OpCode::SLTI;
-    else if (first_token == "and") return OpCode::AND;
-    else if (first_token == "or") return OpCode::OR;
-    else if (first_token == "xor") return OpCode::XOR;
-    else if (first_token == "andi") return OpCode::ANDI;
-    else if (first_token == "ori") return OpCode::ORI;
-    else if (first_token == "xori") return OpCode::XORI;
+    if (first_token == "add") return OpCode::ADD;// done
+    else if (first_token == "sub") return OpCode::SUB;// done
+    else if (first_token == "addi") return OpCode::ADDI;// done
+    else if (first_token == "mul") return OpCode::MUL;// done
+    else if (first_token == "div") return OpCode::DIV;// done
+    else if (first_token == "rem") return OpCode::REM;// done
+    else if (first_token == "lw") return OpCode::LW; // done
+    else if (first_token == "sw") return OpCode::SW; // done
+    else if (first_token == "beq") return OpCode::BEQ; // done
+    else if (first_token == "bne") return OpCode::BNE; // done
+    else if (first_token == "blt") return OpCode::BLT; // done
+    else if (first_token == "ble") return OpCode::BLE; // done
+    else if (first_token == "j") return OpCode::J; // done
+    else if (first_token == "slt") return OpCode::SLT; // done
+    else if (first_token == "slti") return OpCode::SLTI; // done
+    else if (first_token == "and") return OpCode::AND; // done
+    else if (first_token == "or") return OpCode::OR; // done
+    else if (first_token == "xor") return OpCode::XOR; // done
+    else if (first_token == "andi") return OpCode::ANDI; // done
+    else if (first_token == "ori") return OpCode::ORI; // done
+    else if (first_token == "xori") return OpCode::XORI; // done
     else return std::nullopt;
 };
 
@@ -38,7 +38,7 @@ Instruction Parser::parseFile(std::ifstream& file, std::vector<Instruction>& ins
         std::istringstream iss(line); // could be a tag, or a operation, or a comment hash, or a memory declaration
         std::string first_word;
         iss >> first_word;
-
+// ARITHMETIC OPERATIONS, BRANCHES, JUMPS
         if (parseOperation(first_word).has_value())
         {
             OpCode op = parseOperation(first_word).value();
@@ -95,14 +95,19 @@ Instruction Parser::parseFile(std::ifstream& file, std::vector<Instruction>& ins
                 inst.src1 = std::stoi(source.substr(1));
                 inst.imm = std::stoi(imm); // Implementation: perform the operation on value from src1 and imm, store into dest.
             }
-            else
+            else // ADD, SUB, MUL, DIV, REM, SLT, AND, OR, XOR of the form add x5 x3 x4 to be interpreted as src1 = x3, src2 = x4, dest = x5.
             {
-                // Oh no.
+                std::string dest, src1, src2;
+                iss >> dest >> src1 >> src2;
+                int dest_reg = std::stoi(dest.substr(1)); 
+                inst.dest = dest_reg;
+                inst.src1 = std::stoi(src1.substr(1));
+                inst.src2 = std::stoi(src2.substr(1)); // Implementation: perform the operation on value from src1 and value from src2, store into dest.
             }
             inst_memory.push_back(inst);
             inst_number++;
         }
-
+// MEMORY FILLING AND LABELS
         else if (first_word[0]=='.' && first_word[first_word.length() - 1]==':') // Memory declaration of the form .A: 1 2 4 6, to be interpreted as wherever A starts, there is 1, then 2 then 4. Location of A itself is determined by addition assuming all memory contiguous.
         {
             std::string mem_name = first_word.substr(1, first_word.length()-2); // remove the dot and the colon 
@@ -115,7 +120,7 @@ Instruction Parser::parseFile(std::ifstream& file, std::vector<Instruction>& ins
             }
             break;
         }
-
+// PC LABEL DECLARATIONS
         else if (first_word[first_word.length() - 1]==':')
         {
             std::string label_name = first_word.substr(0, first_word.length()-1);
@@ -127,23 +132,15 @@ Instruction Parser::parseFile(std::ifstream& file, std::vector<Instruction>& ins
             throw std::runtime_error("File is corrupted in its input");
             return;
         }
-
     }
 }
-    std::string line;
-    while (std::getline(file, line)) 
-    {
-        if (line.empty() || line[0] == '#');
-        Instruction inst = lineToInst (line);
-        inst_memory.push_back(inst);
-    }
 
 
-int Parser::findLocation(std::vector<std::pair<std::string_view, int>>& aliastable, std::string_view name)
+int Parser::getValue(std::vector<std::pair<std::string_view, int>>& aliastable, std::string_view name)
 {
     for (auto& pair : aliastable)
     {
         if (pair.first == name) return pair.second;
     }
-    return -1; // not found
+    throw std::runtime_error("Label not found"); // not found
 }
