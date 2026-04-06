@@ -9,8 +9,8 @@ while:
     add x3 x1 x0            
 for:
     sub x4 x3 x1            
-    lw x5 A(x4)             
-    lw x6 A(x3)             
+    lw x5 A(x4)         
+    lw x6 A(x3)           
     ble x5 x6 less_than  
     addi x7 x5 0            
     sw x6 A(x4)            

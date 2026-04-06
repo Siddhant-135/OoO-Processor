@@ -5,7 +5,7 @@ Processor::Processor(ProcessorConfig& config){
     clock_cycle = 0;
     ARF.resize(config.num_regs, 0);
     Memory.resize(config.mem_size, 0);
-
+    Parser myparser = Parser();
     // Instantiate Hardware Units
     // Adder
     // Multiplier
@@ -18,7 +18,7 @@ Processor::Processor(ProcessorConfig& config){
 void Processor::loadProgram(const std::string& filename) {
     std::ifstream file(filename);
     if (!file) {throw std::runtime_error("corrupted file");};
-    parsefile(file, inst_memory);
+    myparser.parseFile(file, Processor::inst_memory);
 }
 
 void Processor::flush() {};

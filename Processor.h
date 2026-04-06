@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <iomanip>
+#include <string_view>
 #include "Basics.h"
 #include "Parser.h"
 #include "BranchPredictor.h"
@@ -35,6 +36,9 @@ public:
     std::vector<ExecutionUnit> units;
     LoadStoreQueue* lsq;
     BranchPredictor bp;
+
+    // Parser instance
+    Parser myparser;
 
     Processor(ProcessorConfig& config) {
 
