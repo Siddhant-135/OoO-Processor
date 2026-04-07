@@ -40,12 +40,35 @@ void Processor::stageFetch() {
 void Processor::stageDecode() {
     //we think decode never stalls.
     D_reg.inst = F_reg.inst;
-    if(myROB.is_Full() /*add RAT fulll condition*/){
+    //cases acc to which instruction it is. BUt call step to all exe units regardless.
+    if(myROB.is_Full() /*add RS of desire exe unit full condition*/){
         //stall
         return;
     }
     else{
         myROB.push(D_reg.inst);
+        RSEntry temp_rs_entry;
+        temp_rs_entry.ROB_Entry = myROB.youngest_entry;
+        temp_rs_entry.src1_valid = myRAT.reg_valid(D_reg.inst.src1);
+        temp_rs_entry.src2_valid = myRAT.reg_valid(D_reg.inst.src2);
+        if(temp_rs_entry.src1_valid && temp_rs_entry.src1_valid){
+            temp_rs_entry.src1_value=ARF[D_reg.inst.src1];
+            temp_rs_entry.src2_value=ARF[D_reg.inst.src2];
+        }
+        else if (temp_rs_entry.src1_valid){
+            temp_rs_entry.src1_value=ARF[D_reg.inst.src1];
+            temp_rs_entry.src2_tag=myRAT.get_alias(D_reg.inst.src2);
+        }
+        else if (temp_rs_entry.src2_valid)
+        {
+            temp_rs_entry.src2_value=ARF[D_reg.inst.src2];
+            temp_rs_entry.src1_tag=myRAT.get_alias(D_reg.inst.src1);
+        }
+        else{
+            temp_rs_entry.src1_tag=myRAT.get_alias(D_reg.inst.src1);
+            temp_rs_entry.src2_tag=myRAT.get_alias(D_reg.inst.src2);
+        }
+        
         //push to appropriate reservation station too.
     }
 };

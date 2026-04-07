@@ -47,5 +47,5 @@ struct RSEntry {
     //3 resevation stations: add, mul, div.
     bool src1_valid, src2_valid;
     int src1_tag, src2_tag, src1_value, src2_value;
-    int ROB_Rntry;
+    int ROB_Entry;
 };
