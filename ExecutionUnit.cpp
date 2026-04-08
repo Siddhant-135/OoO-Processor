@@ -26,7 +26,7 @@ RS myRS();
 //div
 
 
-//zzprocess: 
+//process: 
 //1. execute: returns ROB tag and the value its register has gotten. -1 if nothing to return
 //doesnt push anything yet.
 std::pair<int, int> ExecutionUnit::executeCycle(){//arguments: none, return int: ROB tag, val: the result of the calculation. 
