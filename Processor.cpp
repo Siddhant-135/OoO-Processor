@@ -9,8 +9,6 @@ Processor::Processor(ProcessorConfig& config) :myROB(config.rob_size){
     Memory.resize(config.mem_size, 0);
     Parser myparser = Parser();
     RAT myRAT();
-    
-    //can I make a change to the units vector and expect it to stay?
 
     // std::vector<ExecutionUnit> units;
     // Adder
@@ -38,13 +36,11 @@ void Processor::flush() {};
 void Processor::broadcastOnCDB( std::vector<std::pair<int,int>> b_vec){
     //each ROB entry should capture, each Execution Unit should capture
     myROB.capture_results(b_vec);
-    for(int i =0; i<b_vec.size(); i++){
-        units[0].capture(b_vec[i].first,b_vec[i].second);
-        units[1].capture(b_vec[i].first,b_vec[i].second);
-        units[2].capture(b_vec[i].first,b_vec[i].second);
-        units[3].capture(b_vec[i].first,b_vec[i].second);
-        units[4].capture(b_vec[i].first,b_vec[i].second);
-        units[5].capture(b_vec[i].first,b_vec[i].second);
+    for(int j=0; j<units.size(); j++)
+    {
+        for(int i =0; i<b_vec.size(); i++){
+            units[j].capture(b_vec[i].first,b_vec[i].second);
+        }
     }
 }
 
