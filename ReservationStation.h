@@ -3,6 +3,12 @@
 #include <vector>
 #include <optional>
 
+struct RS_triple{
+    bool valid;
+    RSEntry rs_entry;
+    int stage;
+};
+
 class RS {
     public:
     //constructor
@@ -30,23 +36,24 @@ class RS {
 
     //return src1, src2 and ROB entry of a RS entry at idx.
     int get_src1_at(int idx){
-        return RS_stage_vector[idx].second.first.src1_value;
+        return RS_stage_vector[idx].rs_entry.src1_value;
     }
     int get_src2_at(int idx){
-        return RS_stage_vector[idx].second.first.src2_value;
+        return RS_stage_vector[idx].rs_entry.src2_value;
     }
     int get_ROB_at(int idx){
-        return RS_stage_vector[idx].second.first.ROB_Entry;
+        return RS_stage_vector[idx].rs_entry.ROB_Entry;
     }
     OpCode get_op_at(int idx){
-        return RS_stage_vector[idx].second.first.op;
+        return RS_stage_vector[idx].rs_entry.op;
     }
     //capture function too. But is part of execution unit?
     void capture(int tag, int value);
     
     private:
     //or store pair: RS entry, pipline stage in a maxheap: push, pop etc sort? no not just the topmost, but otehr pipelie entryes need updation too. 
-    std::vector <std::pair<bool, std::pair<RSEntry, int>>> RS_stage_vector;
+    // std::vector <std::pair<bool, std::pair<RSEntry, int>>> RS_stage_vector;
+    std::vector <RS_triple> RS_stage_vector;
     int size;
     int pipeline_size;
     int counter;
