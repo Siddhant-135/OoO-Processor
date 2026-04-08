@@ -35,7 +35,18 @@ void Processor::loadProgram(const std::string& filename) {
 
 void Processor::flush() {};
 
-void Processor::broadcastOnCDB() {};
+void Processor::broadcastOnCDB( std::vector<std::pair<int,int>> b_vec){
+    //each ROB entry should capture, each Execution Unit should capture
+    myROB.capture_results(b_vec);
+    for(int i =0; i<b_vec.size(); i++){
+        units[0].capture(b_vec[i].first,b_vec[i].second);
+        units[1].capture(b_vec[i].first,b_vec[i].second);
+        units[2].capture(b_vec[i].first,b_vec[i].second);
+        units[3].capture(b_vec[i].first,b_vec[i].second);
+        units[4].capture(b_vec[i].first,b_vec[i].second);
+        units[5].capture(b_vec[i].first,b_vec[i].second);
+    }
+}
 
 int Processor::getUnitIdx(OpCode op){
     if(op == OpCode::ADD || op == OpCode::ADD || op == OpCode::SUB)
@@ -114,6 +125,7 @@ void Processor::stageExecuteAndBroadcast() {
         }
     } //the broadcast vector now contains all the results of the calculations.
     //tell all execution units to get a new entry in the works too.
+    broadcastOnCDB(broadcast_vector);
 }
 
 void Processor::stageCommit() {
