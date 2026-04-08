@@ -20,7 +20,6 @@ this->name=name;
 this->latency=latency;
 RS myRS();
 }
-
 //add
 //mul 
 //div
