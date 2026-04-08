@@ -54,6 +54,8 @@ public:
 
     void broadcastOnCDB();
 
+    int getUnitIdx(OpCode op);
+
     void stageFetch();
 
     void stageDecode();

@@ -22,9 +22,9 @@ Processor::Processor(ProcessorConfig& config) :myROB(config.rob_size){
     // Branch Computation: see what kind of stuff the parser does.
     units.push_back(ExecutionUnit(UnitType::BRANCH, config.div_lat, config.div_rs_size));
     // Bitwise Logic
-    units.push_back(ExecutionUnit(UnitType::DIVIDER, config.div_lat, config.div_rs_size));
+    units.push_back(ExecutionUnit(UnitType::LOGIC, config.logic_lat, config.logic_rs_size));
     // Load-Store Unit
-    units.push_back(ExecutionUnit(UnitType::DIVIDER, config.div_lat, config.div_rs_size));
+    units.push_back(ExecutionUnit(UnitType::LOADSTORE, config.mem_lat, config.lsq_rs_size));    
 }
 
 void Processor::loadProgram(const std::string& filename) {
@@ -36,6 +36,20 @@ void Processor::loadProgram(const std::string& filename) {
 void Processor::flush() {};
 
 void Processor::broadcastOnCDB() {};
+
+int Processor::getUnitIdx(OpCode op){
+    if(op == OpCode::ADD || op == OpCode::ADD || op == OpCode::SUB)
+    return 0;
+    else if (op == OpCode::MUL)
+    return 1;
+    else if(op == OpCode::DIV || op == OpCode::REM)
+    return 2;
+    else if(op == OpCode::BEQ || op == OpCode::BNE || op == OpCode::BLT || op == OpCode::BLE || op == OpCode::J)
+    return 3;
+    else if(op == OpCode::SLT || op == OpCode::SLT || op == OpCode::AND || op == OpCode::ANDI || op == OpCode::OR || op == OpCode::ORI || op == OpCode::XOR || op == OpCode::XORI)
+    return 4;
+    else return 5;
+}
 
 void Processor::stageFetch() {
     pc+=1;
@@ -51,8 +65,10 @@ void Processor::stageFetch() {
 void Processor::stageDecode() {
     //we think decode never stalls.
     D_reg.inst = F_reg.inst;
+    OpCode op = D_reg.inst.op;
+    int uId = getUnitIdx(op);
     //cases acc to which instruction it is. BUt call step to all exe units regardless.
-    if(myROB.is_Full() /*add RS of desire exe unit full condition*/){
+    if(myROB.is_Full() || units[uId].isRSFull()){/*add RS of desired exe unit full condition*/
         //stall
         return;
     }
@@ -81,10 +97,24 @@ void Processor::stageDecode() {
         }
         
         //push to appropriate reservation station too.
+        units[uId].pushToRS(temp_rs_entry);
     }
 };
 
-void Processor::stageExecuteAndBroadcast() {};
+void Processor::stageExecuteAndBroadcast() {
+    //all entries, if any are out. then they are written to the ROB and written to the RS by the broadcast.
+    //it seems we do need a broadcast vector. Temporary one is made in every cycle.
+    std::pair<int,int> temp;
+    std::vector <std::pair<int,int>> broadcast_vector;
+    for(int i=0;i<6;i++){
+        temp = units[i].executeCycle();
+        if(temp.first != -1){
+        broadcast_vector.push_back(temp);
+        units[i].loadToPipeline();
+        }
+    } //the broadcast vector now contains all the results of the calculations.
+    //tell all execution units to get a new entry in the works too.
+}
 
 void Processor::stageCommit() {
     int idx = myROB.dest_reg();

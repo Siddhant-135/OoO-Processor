@@ -17,7 +17,7 @@ public:
     //constructor
     ExecutionUnit(UnitType name, int latency, int RS_size);
     //methods
-    void capture(int tag, int val);
+    void capture(int tag, int val);  
     //run every cycle.
     std::pair<int,int> executeCycle();
     //add operation function
@@ -41,6 +41,11 @@ public:
         myRS.push(temp);
     }
     
+    void loadToPipeline(){
+        if(myRS.get_valid_entry()==-1){
+            std::cout<<"No RS entry ready yet!";
+        } else std::cout<<"Added new entry to execution pipeline";
+    }
     private:
     RS myRS;
 };
