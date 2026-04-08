@@ -1,5 +1,4 @@
 #include "Parser.h"
-#include <optional>
 
 std::optional<OpCode> Parser::parseOperation(std::string_view first_token)
 {

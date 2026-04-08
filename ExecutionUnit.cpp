@@ -18,7 +18,6 @@ ExecutionUnit::ExecutionUnit(UnitType name, int latency, int RS_size):myRS(RS_si
 //initialise name, latency.
 this->name=name;
 this->latency=latency;
-RS myRS();
 }
 
 //add

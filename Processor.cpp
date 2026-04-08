@@ -20,7 +20,7 @@ Processor::Processor(ProcessorConfig& config) :myROB(config.rob_size){
     // Divider
     units.push_back(ExecutionUnit(UnitType::DIVIDER, config.div_lat, config.div_rs_size));
     // Branch Computation: see what kind of stuff the parser does.
-    units.push_back(ExecutionUnit(UnitType::BRANCH, config.div_lat, config.div_rs_size));
+    units.push_back(ExecutionUnit(UnitType::BRANCH, config.add_lat, config.div_rs_size));
     // Bitwise Logic
     units.push_back(ExecutionUnit(UnitType::LOGIC, config.logic_lat, config.logic_rs_size));
     // Load-Store Unit

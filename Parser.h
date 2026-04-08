@@ -5,6 +5,7 @@
 #include <optional>
 #include <string_view>
 #include <string>
+#include <vector>
 
 class Parser
 {
