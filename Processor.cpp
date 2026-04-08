@@ -3,17 +3,28 @@
 Processor::Processor(ProcessorConfig& config) :myROB(config.rob_size){
     pc = 0;
     clock_cycle = 0;
+
+    // Instantiate Hardware Units
     ARF.resize(config.num_regs, 0);
     Memory.resize(config.mem_size, 0);
     Parser myparser = Parser();
     RAT myRAT();
-    // Instantiate Hardware Units
+    
+    //can I make a change to the units vector and expect it to stay?
+
+    // std::vector<ExecutionUnit> units;
     // Adder
+    units.push_back(ExecutionUnit(UnitType::ADDER, config.add_lat, config.adder_rs_size));
     // Multiplier
+    units.push_back(ExecutionUnit(UnitType::MULTIPLIER, config.mul_lat, config.mult_rs_size));
     // Divider
-    // Branch Computation
+    units.push_back(ExecutionUnit(UnitType::DIVIDER, config.div_lat, config.div_rs_size));
+    // Branch Computation: see what kind of stuff the parser does.
+    units.push_back(ExecutionUnit(UnitType::BRANCH, config.div_lat, config.div_rs_size));
     // Bitwise Logic
+    units.push_back(ExecutionUnit(UnitType::DIVIDER, config.div_lat, config.div_rs_size));
     // Load-Store Unit
+    units.push_back(ExecutionUnit(UnitType::DIVIDER, config.div_lat, config.div_rs_size));
 }
 
 void Processor::loadProgram(const std::string& filename) {
@@ -49,6 +60,7 @@ void Processor::stageDecode() {
         myROB.push(D_reg.inst);
         RSEntry temp_rs_entry;
         temp_rs_entry.ROB_Entry = myROB.youngest_entry;
+        temp_rs_entry.op = D_reg.inst.op;
         temp_rs_entry.src1_valid = myRAT.reg_valid(D_reg.inst.src1);
         temp_rs_entry.src2_valid = myRAT.reg_valid(D_reg.inst.src2);
         if(temp_rs_entry.src1_valid && temp_rs_entry.src1_valid){
@@ -59,8 +71,7 @@ void Processor::stageDecode() {
             temp_rs_entry.src1_value=ARF[D_reg.inst.src1];
             temp_rs_entry.src2_tag=myRAT.get_alias(D_reg.inst.src2);
         }
-        else if (temp_rs_entry.src2_valid)
-        {
+        else if (temp_rs_entry.src2_valid){
             temp_rs_entry.src2_value=ARF[D_reg.inst.src2];
             temp_rs_entry.src1_tag=myRAT.get_alias(D_reg.inst.src1);
         }

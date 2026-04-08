@@ -11,6 +11,7 @@
 #include "LoadStoreQueue.h"
 #include "RegisterAliasTable.h"
 #include "ReorderBuffer.h"
+#include "ExecutionUnit.h"
 
 struct Pipeline_reg{
     Instruction inst;

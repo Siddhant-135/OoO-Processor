@@ -32,17 +32,21 @@ int RS::get_valid_entry(){//modify its pipeline stage entry to 0
     return -1;    
 }
 
-int RS::step_rs_get_final(){
+int RS::step_rs_get_final(){//does op matter here? No, the parent, execution, takes care of it. modifying this
     int idx = -1;
-    for(int i=0;i<size;i++){
-        if(RS_stage_vector[i].first){
-            if(RS_stage_vector[i].second.second>=0){
-                RS_stage_vector[i].second.second++;
-                if (RS_stage_vector[i].second.second==pipeline_size){
-                idx=i;
+    counter++;
+    if(counter == stage_lat){
+        for(int i=0;i<size;i++){
+            if(RS_stage_vector[i].first){
+                if(RS_stage_vector[i].second.second>=0){
+                    RS_stage_vector[i].second.second++;
+                    if (RS_stage_vector[i].second.second==pipeline_size){
+                    idx=i;
+                    }
                 }
             }
         }
+        counter =0;
     }
     return idx;
 }

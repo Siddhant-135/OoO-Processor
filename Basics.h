@@ -3,6 +3,7 @@
 
 enum class OpCode { ADD, SUB, ADDI, MUL, DIV, REM, LW, SW, BEQ, BNE, BLT, BLE, J, SLT, SLTI, AND, OR, XOR, ANDI, ORI, XORI };
 enum class UnitType { ADDER, MULTIPLIER, DIVIDER, LOADSTORE, BRANCH, LOGIC };
+//a set of UnitTypes for nonpipelined instructions. Empty, all are pipelined
 
 struct Instruction {
     OpCode op;
@@ -23,7 +24,7 @@ struct ProcessorConfig {
     int mul_lat = 4;
     int div_lat = 5;
     int mem_lat = 4;
-
+//branch laency is adder latency
     int logic_rs_size = 4;
     int adder_rs_size = 4;
     int mult_rs_size = 2;
@@ -48,4 +49,5 @@ struct RSEntry {
     bool src1_valid, src2_valid;
     int src1_tag, src2_tag, src1_value, src2_value;
     int ROB_Entry;
+    OpCode op;
 };

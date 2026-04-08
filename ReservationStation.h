@@ -6,10 +6,11 @@
 class RS {
     public:
     //constructor
-    RS(int size, int pipeline_size){
+    RS(int size, int pipeline_size, int stage_lat){
         this->size=size;
         RS_stage_vector.resize(size);
         this->pipeline_size=pipeline_size;
+        this->stage_lat=stage_lat;
     }
 
     bool isFull();
@@ -37,6 +38,9 @@ class RS {
     int get_ROB_at(int idx){
         return RS_stage_vector[idx].second.first.ROB_Entry;
     }
+    OpCode get_op_at(int idx){
+        return RS_stage_vector[idx].second.first.op;
+    }
     //capture function too. But is part of execution unit?
     void capture(int tag, int value);
     
@@ -45,6 +49,8 @@ class RS {
     std::vector <std::pair<bool, std::pair<RSEntry, int>>> RS_stage_vector;
     int size;
     int pipeline_size;
+    int counter;
+    int stage_lat;
 };
 
 //ex unit flow: every cycle: 
