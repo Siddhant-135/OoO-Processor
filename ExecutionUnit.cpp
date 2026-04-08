@@ -18,7 +18,6 @@ ExecutionUnit::ExecutionUnit(UnitType name, int latency, int RS_size):myRS(RS_si
 //initialise name, latency.
 this->name=name;
 this->latency=latency;
-RS myRS();
 }
 //add
 //mul 
@@ -88,7 +87,7 @@ else{
     return std::make_pair(-1,-1);
 }
 }
-//boadcast: return tag and value, store in a vector for all execution units and then iterate through the array and call the captures of all necessary place.
+//broadcast: return tag and value, store in a vector for all execution units and then iterate through the array and call the captures of all necessary place.
 
 
 void ExecutionUnit::capture (int tag, int val)

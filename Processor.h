@@ -52,7 +52,9 @@ public:
 
     void flush();
 
-    void broadcastOnCDB();
+    void broadcastOnCDB( std::vector<std::pair<int,int>> b_vec);
+
+    int getUnitIdx(OpCode op);
 
     void stageFetch();
 
