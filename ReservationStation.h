@@ -6,9 +6,10 @@
 class RS {
     public:
     //constructor
-    RS(int size){
+    RS(int size, int pipeline_size){
         this->size=size;
         RS_stage_vector.resize(size);
+        this->pipeline_size=pipeline_size;
     }
 
     bool isFull();
@@ -16,16 +17,28 @@ class RS {
     //push to RS
     void push(RSEntry temp);//an O(n) search.
 
-    //method to iterate linearly and find the ready entry: optional result?
-    std::optional<RSEntry> get_valid_entry();
+    //method to iterate linearly and find the ready entry: optional result? returns index of ready entry. -1 if none yet. Also puts the ready rnetry in pipleine.
+    int get_valid_entry();
 
-    //method to remove the evaluated entry from RS: rather, just update the RS. Returns a nullptr if there is no ready entry yet. 
-    std::optional<RSEntry> get_ready_entry();
+    // update_rs(), returns index.
+    int step_rs_get_final();
     //every cycle of execute, check if there is an instruction whose cycle count is pipeline length
-    //if so, fetch it and do the math. The exe unit must then broadcast the result. Also delete it?
+    //if so, fetch it and do the math. The exe unit must then broadcast the result. 
+    //Also delete it
+    void invalidate_entry(int idx);
+
+    //capture function too. But is part of execution unit?
 
     private:
     //or store pair: RS entry, pipline stage in a maxheap: push, pop etc sort? no not just the topmost, but otehr pipelie entryes need updation too. 
     std::vector <std::pair<bool, std::pair<RSEntry, int>>> RS_stage_vector;
     int size;
+    int pipeline_size;
 };
+
+//ex unit flow: every cycle: 
+//exe()
+// fun update rs: non negative entries incremented by one i = ith cycle completed. So i=pipeline_stages pe get the index, do the calc: anothe unit? and then erase the  entry from RS after rsult gotten. Current function will just provide entry index.
+// update_rs(), returns index.
+// do_calc.
+// delete entry

@@ -21,3 +21,33 @@ void RS::push(RSEntry temp){ //create the RS vector at the time of decode itself
     }
     return;    
 }
+
+int RS::get_valid_entry(){//modify its pipeline stage entry to 0
+    for(int i=0;i<size;i++){
+        if((RS_stage_vector[i].first) && RS_stage_vector[i].second.second==-1 && RS_stage_vector[i].second.first.src1_valid && RS_stage_vector[i].second.first.src2_valid){
+            RS_stage_vector[i].second.second=0;
+            return i;
+        }
+    }
+    return -1;    
+}
+
+int RS::step_rs_get_final(){
+    int idx = -1;
+    for(int i=0;i<size;i++){
+        if(RS_stage_vector[i].first){
+            if(RS_stage_vector[i].second.second>=0){
+                RS_stage_vector[i].second.second++;
+                if (RS_stage_vector[i].second.second==pipeline_size){
+                idx=i;
+                }
+            }
+        }
+    }
+    return idx;
+}
+
+void RS::invalidate_entry(int idx){
+    RS_stage_vector[idx].first=false;
+    return;
+}
