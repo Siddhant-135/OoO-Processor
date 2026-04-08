@@ -39,13 +39,13 @@ if(idx!=-1){
     int src2 = myRS.get_src2_at(idx);
     int tag = myRS.get_ROB_at(idx);
 
-    if(name==OpCode::ADD){
+    if(name== UnitType::ADDER){
         return (std::make_pair(tag, add(src1, src2)));
     }
-    if(name==OpCode::MUL){
+    if(name==UnitType::MULTIPLIER){
         return (std::make_pair(tag, mul(src1, src2)));
     }
-    if(name==OpCode::DIV){
+    if(name==UnitType::DIVIDER){
         return (std::make_pair(tag, div(src1, src2)));
     }
     myRS.invalidate_entry(idx);
