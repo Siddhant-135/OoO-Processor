@@ -27,6 +27,16 @@ class RS {
     //Also delete it
     void invalidate_entry(int idx);
 
+    //return src1, src2 and ROB entry of a RS entry at idx.
+    int get_src1_at(int idx){
+        return RS_stage_vector[idx].second.first.src1_value;
+    }
+    int get_src2_at(int idx){
+        return RS_stage_vector[idx].second.first.src2_value;
+    }
+    int get_ROB_at(int idx){
+        return RS_stage_vector[idx].second.first.ROB_Entry;
+    }
     //capture function too. But is part of execution unit?
 
     private:
@@ -40,5 +50,6 @@ class RS {
 //exe()
 // fun update rs: non negative entries incremented by one i = ith cycle completed. So i=pipeline_stages pe get the index, do the calc: anothe unit? and then erase the  entry from RS after rsult gotten. Current function will just provide entry index.
 // update_rs(), returns index.
+// push to RS
 // do_calc.
 // delete entry
