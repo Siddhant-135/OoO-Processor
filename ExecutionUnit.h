@@ -18,6 +18,7 @@ public:
     ExecutionUnit(UnitType name, int latency, int RS_size);
     //methods
     void capture(int tag, int val);
+    //run every cycle.
     std::pair<int,int> executeCycle();
     //add operation function
     int add(int src1, int src2){
@@ -30,7 +31,16 @@ public:
     //div: truncated division.
     int div(int src1, int src2){
         return src1/src2;
+    } 
+
+    bool isRSFull(){
+        return myRS.isFull();
     }
-private:
+
+    void pushToRS(RSEntry temp){
+        myRS.push(temp);
+    }
+    
+    private:
     RS myRS;
 };

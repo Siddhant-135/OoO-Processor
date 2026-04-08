@@ -38,7 +38,8 @@ class RS {
         return RS_stage_vector[idx].second.first.ROB_Entry;
     }
     //capture function too. But is part of execution unit?
-
+    void capture(int tag, int value);
+    
     private:
     //or store pair: RS entry, pipline stage in a maxheap: push, pop etc sort? no not just the topmost, but otehr pipelie entryes need updation too. 
     std::vector <std::pair<bool, std::pair<RSEntry, int>>> RS_stage_vector;
@@ -50,6 +51,7 @@ class RS {
 //exe()
 // fun update rs: non negative entries incremented by one i = ith cycle completed. So i=pipeline_stages pe get the index, do the calc: anothe unit? and then erase the  entry from RS after rsult gotten. Current function will just provide entry index.
 // update_rs(), returns index.
-// push to RS
 // do_calc.
 // delete entry
+
+// push to RS

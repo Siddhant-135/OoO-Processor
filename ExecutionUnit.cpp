@@ -28,12 +28,10 @@ RS myRS();
 
 //process: 
 //1. execute: returns ROB tag and the value its register has gotten. -1 if nothing to return
-//doesnt push anything yet.
+//doesnt push anything yet.// also broadcast via the return.
 std::pair<int, int> ExecutionUnit::executeCycle(){//arguments: none, return int: ROB tag, val: the result of the calculation. 
 // update_rs(), returns index.
 int idx = myRS.step_rs_get_final();//index of the entry that has completed the pipeline.
-// also broadcast
-// delete entry
 if(idx!=-1){
     int src1 = myRS.get_src1_at(idx);
     int src2 = myRS.get_src2_at(idx);
@@ -48,16 +46,18 @@ if(idx!=-1){
     if(name==UnitType::DIVIDER){
         return (std::make_pair(tag, div(src1, src2)));
     }
+    // delete entry from RS
     myRS.invalidate_entry(idx);
 }
 else{
     return std::make_pair(-1,-1);
 }
 }
-
 //boadcast: return tag and value, store in a vector for all execution units and then iterate through the array and call the captures of all necessary place.
+
 
 void ExecutionUnit::capture (int tag, int val)
 {
-    
+    //look in RS wherever the tag exists and replace it at those indices.
+    myRS.capture(tag, val);
 }

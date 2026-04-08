@@ -51,3 +51,18 @@ void RS::invalidate_entry(int idx){
     RS_stage_vector[idx].first=false;
     return;
 }
+
+void RS::capture(int tag, int value){
+    for(int i=0;i<size;i++){
+        if(RS_stage_vector[i].first){
+            if(!RS_stage_vector[i].second.first.src1_valid && RS_stage_vector[i].second.first.ROB_Entry==tag){
+                RS_stage_vector[i].second.first.src1_valid=true;
+                RS_stage_vector[i].second.first.src1_value=value;
+            }
+            if(!RS_stage_vector[i].second.first.src2_valid && RS_stage_vector[i].second.first.ROB_Entry==tag){
+                RS_stage_vector[i].second.first.src2_valid=true;
+                RS_stage_vector[i].second.first.src2_value=value;
+            }
+        }
+    }
+}
