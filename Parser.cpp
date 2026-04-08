@@ -27,7 +27,7 @@ std::optional<OpCode> Parser::parseOperation(std::string_view first_token)
 };
 
 
-Instruction Parser::parseFile(std::ifstream& file, std::vector<Instruction>& inst_memory, std::vector<int>& memory)
+void Parser::parseFile(std::ifstream& file, std::vector<Instruction>& inst_memory, std::vector<int>& memory)
 {
     std::string line;
     int inst_number = 0;
@@ -129,7 +129,6 @@ Instruction Parser::parseFile(std::ifstream& file, std::vector<Instruction>& ins
 
         else{
             throw std::runtime_error("File is corrupted in its input");
-            return;
         }
     }
 }

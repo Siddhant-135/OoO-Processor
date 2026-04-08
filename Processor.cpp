@@ -8,7 +8,7 @@ Processor::Processor(ProcessorConfig& config) :myROB(config.rob_size){
     ARF.resize(config.num_regs, 0);
     Memory.resize(config.mem_size, 0);
     Parser myparser = Parser();
-    RAT myRAT();
+    RAT myrat = RAT();
 
     // Keeping unit ordering stable for consistent index assumptions elsewhere:
     // ADDER, MULTIPLIER, DIVIDER, BRANCH, LOADSTORE, LOGIC
@@ -50,15 +50,12 @@ int Processor::getUnitIdx(OpCode op){
 }
 
 void Processor::stageFetch() {
-    pc+=1;
-    //start with pc =-1
-    if(pc>=inst_memory.size()){
-    return;}
-    else{
-        F_reg.inst=inst_memory[pc];
+    if (pc >= inst_memory.size()) {
+        return;
     }
-
-};
+    F_reg.inst = inst_memory[pc];
+    pc += 1;
+}
 
 void Processor::stageDecode() {
     //we think decode never stalls.
@@ -126,11 +123,16 @@ void Processor::stageCommit() {
 };
 
 bool Processor::step() {
-    clock_cycle++;
-    if (exception) 
-    {
+    if (exception) {
         flush();
         return false;
     }
-    else return true; // return false if CPU has no more to do after this cycle
+
+    if (pc >= inst_memory.size()) { // HALTING CONDITION. bool like a flag to stop doing steps.
+        return false;
+    }
+
+    stageFetch();
+    clock_cycle++;
+    return true;
 }

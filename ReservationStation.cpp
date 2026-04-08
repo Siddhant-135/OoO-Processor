@@ -1,4 +1,3 @@
-#pragma once
 #include "ReservationStation.h"
 
 bool RS::isFull(){

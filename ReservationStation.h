@@ -49,10 +49,10 @@ class RS {
         return RS_stage_vector[idx].rs_entry.op;
     }
     int get_imm_value(int idx){
-        return RS_stage_vector[idx].second.first.imm_value;
+        return RS_stage_vector[idx].rs_entry.imm_value;
     }
     int get_dest_value(int idx){
-        return RS_stage_vector[idx].second.first.dest_value;
+        return RS_stage_vector[idx].rs_entry.dest_value;
     }
     //capture function too. But is part of execution unit?
     void capture(int tag, int value);

@@ -1,6 +1,7 @@
 # Compiler and flags
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall
+SOURCES = $(filter-out $(FILE), $(wildcard *.cpp))
 
 # ==========================================
 # make compile FILE=<filename.cpp>
@@ -10,7 +11,7 @@ CXXFLAGS = -std=c++17 -Wall
 # and will have its own main() function.
 compile:
 	@echo "Compiling simulator:"
-	$(CXX) $(CXXFLAGS) $(FILE) -o main
+	$(CXX) $(CXXFLAGS) $(FILE) $(SOURCES) -o main
 	@echo "Build successful, 'main' created."
 
 # ==========================================
