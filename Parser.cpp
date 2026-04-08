@@ -26,7 +26,6 @@ std::optional<OpCode> Parser::parseOperation(std::string_view first_token)
     else return std::nullopt;
 };
 
-
 void Parser::parseFile(std::ifstream& file, std::vector<Instruction>& inst_memory, std::vector<int>& memory)
 {
     std::string line;
@@ -34,10 +33,10 @@ void Parser::parseFile(std::ifstream& file, std::vector<Instruction>& inst_memor
     int mem_location = 0;
     while (std::getline(file, line)) 
     {
-        std::istringstream iss(line); // could be a tag, or a operation, or a comment hash, or a memory declaration
+        std::istringstream iss(line); // 4 options: could be a tag, or a operation, or a comment hash, or a memory declaration
         std::string first_word;
         iss >> first_word;
-// ARITHMETIC OPERATIONS, BRANCHES, JUMPS
+// ARITHMETIC OPERATIONS, BRANCHES, JUMPS == pushback inst to inst_memory 
         if (parseOperation(first_word).has_value())
         {
             OpCode op = parseOperation(first_word).value();
@@ -119,7 +118,7 @@ void Parser::parseFile(std::ifstream& file, std::vector<Instruction>& inst_memor
             }
             break;
         }
-// PC LABEL DECLARATIONS
+// PC LABEL DECLARATIONS == push label, pointed pc into instruction alias 
         else if (first_word[first_word.length() - 1]==':')
         {
             std::string label_name = first_word.substr(0, first_word.length()-1);
@@ -132,8 +131,7 @@ void Parser::parseFile(std::ifstream& file, std::vector<Instruction>& inst_memor
         }
     }
 }
-
-
+// FINDS location at which a label or memory tag is stored in the actual alias table.
 int Parser::getValue(std::vector<std::pair<std::string_view, int>>& aliastable, std::string_view name)
 {
     for (auto& pair : aliastable)

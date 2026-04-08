@@ -15,6 +15,10 @@ class RS {
     RS(int size, int pipeline_size, int stage_lat){
         this->size=size;
         RS_stage_vector.resize(size);
+        for (int i = 0; i < size; i++) {
+            RS_stage_vector[i].valid = false;
+            RS_stage_vector[i].stage = -1;
+        }
         this->pipeline_size=pipeline_size;
         this->stage_lat=stage_lat;
     }
@@ -56,6 +60,13 @@ class RS {
     }
     //capture function too. But is part of execution unit?
     void capture(int tag, int value);
+    bool hasPendingWork(){
+        for (int i = 0; i < size; i++) {
+            if (RS_stage_vector[i].valid) {
+                return true;
+            }
+        } return false;
+    }
     
     private:
     //or store pair: RS entry, pipline stage in a maxheap: push, pop etc sort? no not just the topmost, but otehr pipelie entryes need updation too. 

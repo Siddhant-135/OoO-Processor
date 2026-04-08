@@ -32,6 +32,7 @@ public:
     int div(int src1, int src2){return src1/src2;} // truncated
 
     bool isRSFull(){return myRS.isFull();}
+    bool hasPendingWork() { return myRS.hasPendingWork(); }
 
     void pushToRS(RSEntry temp){myRS.push(temp);}
     

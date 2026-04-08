@@ -1,5 +1,6 @@
 #include "Processor.h"
 
+// SETUP
 Processor::Processor(ProcessorConfig& config) :myROB(config.rob_size){
     pc = 0;
     clock_cycle = 0;
@@ -58,14 +59,14 @@ void Processor::stageFetch() {
 }
 
 void Processor::stageDecode() {
-    //we think decode never stalls.
+    //we think decode never stalls. // I support her thesis for now.
     D_reg.inst = F_reg.inst;
     OpCode op = D_reg.inst.op;
     int uId = getUnitIdx(op);
     if (uId == -1) {
         return;
     }
-    //cases acc to which instruction it is. BUt call step to all exe units regardless.
+    //cases acc to which instruction it is. But call step to all exe units regardless.
     if(myROB.is_Full() || units[uId].isRSFull()){/*add RS of desired exe unit full condition*/
         //stall
         return;
@@ -127,11 +128,12 @@ bool Processor::step() {
         flush();
         return false;
     }
-
     if (pc >= inst_memory.size()) { // HALTING CONDITION. bool like a flag to stop doing steps.
         return false;
     }
-
+    stageCommit();
+    stageExecuteAndBroadcast();
+    stageDecode();
     stageFetch();
     clock_cycle++;
     return true;

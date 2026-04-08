@@ -56,7 +56,8 @@ if(idx!=-1){
     int dest = myRS.get_dest_value(idx);
     int tag = myRS.get_ROB_at(idx);
     OpCode op = myRS.get_op_at(idx);
-    int output;
+    int output = 0;
+    
     // OpCode is the operation, UnitType is the hardware doing the operation.
     if(name== UnitType::ADDER){//ADD, SUB, ADDI
         if(op == OpCode::ADD)
@@ -112,7 +113,7 @@ if(idx!=-1){
         else if(op == OpCode::SLTI)
         output = int (src1 < src2);
     }
-    return (std::make_pair(tag, output)); 
+    return std::make_pair(tag, output); 
     myRS.invalidate_entry(idx);
 }
 else{
