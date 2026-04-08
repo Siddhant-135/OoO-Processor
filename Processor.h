@@ -44,8 +44,6 @@ public:
     // Parser instance
     Parser myparser;
 
-
-
     Processor(ProcessorConfig& config);
 
     void loadProgram(const std::string& filename);

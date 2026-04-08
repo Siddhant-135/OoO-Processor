@@ -14,17 +14,17 @@ Processor::Processor(ProcessorConfig& config) :myROB(config.rob_size){
 
     // std::vector<ExecutionUnit> units;
     // Adder
-    units.push_back(ExecutionUnit(UnitType::ADDER, config.add_lat, config.adder_rs_size));
+    units.push_back(ExecutionUnit(UnitType::ADDER, config.add_lat, config.adder_rs_size, Memory));
     // Multiplier
-    units.push_back(ExecutionUnit(UnitType::MULTIPLIER, config.mul_lat, config.mult_rs_size));
+    units.push_back(ExecutionUnit(UnitType::MULTIPLIER, config.mul_lat, config.mult_rs_size, Memory));
     // Divider
-    units.push_back(ExecutionUnit(UnitType::DIVIDER, config.div_lat, config.div_rs_size));
+    units.push_back(ExecutionUnit(UnitType::DIVIDER, config.div_lat, config.div_rs_size, Memory));
     // Branch Computation: see what kind of stuff the parser does.
-    units.push_back(ExecutionUnit(UnitType::BRANCH, config.add_lat, config.div_rs_size));
+    units.push_back(ExecutionUnit(UnitType::BRANCH, config.add_lat, config.div_rs_size, Memory));
     // Bitwise Logic
-    units.push_back(ExecutionUnit(UnitType::LOGIC, config.logic_lat, config.logic_rs_size));
+    units.push_back(ExecutionUnit(UnitType::LOGIC, config.logic_lat, config.logic_rs_size, Memory));
     // Load-Store Unit
-    units.push_back(ExecutionUnit(UnitType::LOADSTORE, config.mem_lat, config.lsq_rs_size));    
+    units.push_back(ExecutionUnit(UnitType::LOADSTORE, config.mem_lat, config.lsq_rs_size, Memory));    
 }
 
 void Processor::loadProgram(const std::string& filename) {

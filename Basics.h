@@ -37,9 +37,9 @@ struct ROBEntry {
     // valid bit, ready bit, architectural register ID
     // other fields as required
     bool valid = false;
-    bool ready_from_RS= false;//always ready to go to RS. This is instead bool for "has it received a value from RS" 
+    bool ready_from_RS= false; //always ready to go to RS. This is instead bool for "has it received a value from RS" 
     int dest_regId = -1; 
-    int dest_regVal;//just store the dest_regVal. What about memory? NOT IN ROB
+    int dest_regVal; //just store the dest_regVal. What about memory? NOT IN ROB
 };
 
 struct RSEntry {
@@ -48,6 +48,7 @@ struct RSEntry {
     //3 resevation stations: add, mul, div.
     bool src1_valid, src2_valid;
     int src1_tag, src2_tag, src1_value, src2_value;
+    int imm_value, dest_value; 
     int ROB_Entry;
     OpCode op;
 };

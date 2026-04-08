@@ -22,7 +22,7 @@ class RS {
     int get_valid_entry();
 
     // update_rs(), returns index.
-    int step_rs_get_final();
+    int update_rs();
     //every cycle of execute, check if there is an instruction whose cycle count is pipeline length
     //if so, fetch it and do the math. The exe unit must then broadcast the result. 
     //Also delete it
@@ -40,6 +40,12 @@ class RS {
     }
     OpCode get_op_at(int idx){
         return RS_stage_vector[idx].second.first.op;
+    }
+    int get_imm_value(int idx){
+        return RS_stage_vector[idx].second.first.imm_value;
+    }
+    int get_dest_value(int idx){
+        return RS_stage_vector[idx].second.first.dest_value;
     }
     //capture function too. But is part of execution unit?
     void capture(int tag, int value);

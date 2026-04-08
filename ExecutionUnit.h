@@ -6,6 +6,10 @@
 #include "ReservationStation.h"
 
 class ExecutionUnit {
+private:
+    std::vector<int>& memory; // common memory throughout (mainly for LW, SW)
+    RS myRS; // associated reservation station
+
 public:
     // per-unit reservation station
     UnitType name;
@@ -15,37 +19,23 @@ public:
     bool has_exception = false; // exception flag
     
     //constructor
-    ExecutionUnit(UnitType name, int latency, int RS_size);
+    ExecutionUnit(UnitType name, int latency, int RS_size, std::vector<int>& memory);
     //methods
     void capture(int tag, int val);  
-    //run every cycle.
+    //to run every cycle.
     std::pair<int,int> executeCycle();
     //add operation function
-    int add(int src1, int src2){
-        return src1+src2;
-    }
-    //mul
-    int mul(int src1, int src2){
-        return src1*src2;
-    } 
-    //div: truncated division.
-    int div(int src1, int src2){
-        return src1/src2;
-    } 
+    int add(int src1, int src2){return src1+src2;} // Group-theretically correct implementaion.
+    int mul(int src1, int src2){return src1*src2;} 
+    int div(int src1, int src2){return src1/src2;} // truncated
 
-    bool isRSFull(){
-        return myRS.isFull();
-    }
+    bool isRSFull(){return myRS.isFull();}
 
-    void pushToRS(RSEntry temp){
-        myRS.push(temp);
-    }
+    void pushToRS(RSEntry temp){myRS.push(temp);}
     
     void loadToPipeline(){
         if(myRS.get_valid_entry()==-1){
             std::cout<<"No RS entry ready yet!";
         } else std::cout<<"Added new entry to execution pipeline";
     }
-    private:
-    RS myRS;
 };
