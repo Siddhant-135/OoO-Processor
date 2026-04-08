@@ -20,6 +20,8 @@ public:
     
     //constructor
     ExecutionUnit(UnitType name, int latency, int RS_size, std::vector<int>& memory);
+    // API for the UnitType to OpCode classification.
+    static UnitType getUnitTypeForOp(OpCode op);
     //methods
     void capture(int tag, int val);  
     //to run every cycle.

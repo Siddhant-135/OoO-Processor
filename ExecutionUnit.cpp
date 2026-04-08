@@ -10,6 +10,39 @@ this->name=name;
 this->latency=latency;
 }
 
+UnitType ExecutionUnit::getUnitTypeForOp(OpCode op) {
+    switch (op) {
+        case OpCode::ADD:
+        case OpCode::SUB:
+        case OpCode::ADDI:
+            return UnitType::ADDER;
+        case OpCode::MUL:
+            return UnitType::MULTIPLIER;
+        case OpCode::DIV:
+        case OpCode::REM:
+            return UnitType::DIVIDER;
+        case OpCode::BEQ:
+        case OpCode::BNE:
+        case OpCode::BLT:
+        case OpCode::BLE:
+        case OpCode::J:
+            return UnitType::BRANCH;
+        case OpCode::LW:
+        case OpCode::SW:
+            return UnitType::LOADSTORE;
+        case OpCode::SLT:
+        case OpCode::SLTI:
+        case OpCode::AND:
+        case OpCode::OR:
+        case OpCode::XOR:
+        case OpCode::ANDI:
+        case OpCode::ORI:
+        case OpCode::XORI:
+            return UnitType::LOGIC;
+    }
+    return UnitType::ADDER;
+}
+
 //returns ROB tag and the value its register has gotten. -1 if nothing to return
 //doesnt push anything yet.
 // also broadcast via the return.
