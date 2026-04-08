@@ -50,12 +50,13 @@ UnitType ExecutionUnit::getUnitTypeForOp(OpCode op) {
 std::pair<int, int> ExecutionUnit::executeCycle(){ //arguments: none, return int: ROB tag, val: the result of the calculation. 
 int idx = myRS.update_rs(); //returns index of the entry that has completed the pipeline.
 if(idx!=-1){
-    int src1 = myRS.get_src1_at(idx);
-    int src2 = myRS.get_src2_at(idx);
-    int imm = myRS.get_imm_value(idx); 
-    int dest = myRS.get_dest_value(idx);
-    int tag = myRS.get_ROB_at(idx);
-    OpCode op = myRS.get_op_at(idx);
+    const RSEntry& rs_entry = myRS.get_entry(idx);
+    int src1 = rs_entry.src1_value;
+    int src2 = rs_entry.src2_value;
+    int imm = rs_entry.imm_value; 
+    int dest = rs_entry.dest_value;
+    int tag = rs_entry.ROB_Entry;
+    OpCode op = rs_entry.op;
     int output = 0;
     
     // OpCode is the operation, UnitType is the hardware doing the operation.

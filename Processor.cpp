@@ -74,7 +74,7 @@ void Processor::stageDecode() {
     else{
         myROB.push(D_reg.inst);
         RSEntry temp_rs_entry;
-        temp_rs_entry.ROB_Entry = myROB.youngest_entry;
+        temp_rs_entry.ROB_Entry = myROB.newest_entry_idx();
         temp_rs_entry.op = D_reg.inst.op;
         temp_rs_entry.src1_valid = myRAT.reg_valid(D_reg.inst.src1);
         temp_rs_entry.src2_valid = myRAT.reg_valid(D_reg.inst.src2);
@@ -117,8 +117,9 @@ void Processor::stageExecuteAndBroadcast() {
 }
 
 void Processor::stageCommit() {
-    int idx = myROB.dest_reg();
-    ARF[idx] = myROB.dest_val();
+    ROBEntry entry = myROB.to_be_commited_entry();
+    int idx = entry.dest_regId;
+    ARF[idx] = entry.dest_regVal;
     myROB.pop();
     myRAT.rem_from_RAT(idx);
 };
