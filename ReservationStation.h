@@ -29,7 +29,7 @@ class RS {
     void invalidate_entry(int idx);
 
     //return src1, src2 and ROB entry of a RS entry at idx.
-    int get_src1_at(int idx){ 
+    int get_src1_at(int idx){ // Aroy bhai, I did not name this shit, but be aware that such namers exist in our batch before becoming TA of more of our courses. What is this?!!! Who names functions like complete the sentence exercises!! bruh.
         return RS_stage_vector[idx].second.first.src1_value;
     }
     int get_src2_at(int idx){
