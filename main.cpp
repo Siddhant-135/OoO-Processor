@@ -36,9 +36,9 @@ int main(int argc, char* argv[]) {
             cout << "\n[!] Execution halted at cycle limit: " << max_cycles << "\n";
             break;
         }
-        else if (cycle_count >= 10000) // Extra added just as a safeguard, remove for full length functionality.
+        else if (cycle_count >= 20) // Extra added just as a safeguard, remove for full length functionality.
         {
-            cout << "\n[!] Execution halted at 10,000 cycles to prevent bad things from happening, remove from main.cpp " << "\n";
+            cout << "\n[!] Execution halted at 20 cycles to prevent bad things from happening, remove from main.cpp " << "\n";
             break;
         }
     }

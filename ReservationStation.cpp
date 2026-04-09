@@ -31,6 +31,13 @@ int RS::get_valid_entry(){//modify its pipeline stage entry to 0
     return -1;    
 }
 
+void RS::pushToPipeline(int idx){
+    if(idx >= 0 && idx < size){
+        RS_stage_vector[idx].stage=0;
+    }
+    return;    
+}
+
 int RS::update_rs(){//does op matter here? No, the parent, execution, takes care of it. modifying this
     int idx = -1;
     counter++;

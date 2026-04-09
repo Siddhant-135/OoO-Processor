@@ -116,8 +116,15 @@ if(idx!=-1){
     }
     return std::make_pair(tag, output); 
     myRS.invalidate_entry(idx);
+    myRS.PipelineCounter--;
+    if(myRS.PipelineCounter<latency){//see fix, divide latency by stages per instruction.
+        loadToPipeline();
+    }
 }
 else{
+    if(myRS.PipelineCounter<latency){//see fix, divide latency by stages per instruction.
+        loadToPipeline();
+        }
     return std::make_pair(-1,-1);
 }
 }
