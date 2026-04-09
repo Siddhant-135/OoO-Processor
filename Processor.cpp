@@ -30,6 +30,7 @@ void Processor::flush() {};
 
 void Processor::broadcastOnCDB( std::vector<std::pair<int,int>> b_vec){
     //each ROB entry should , each Execution Unit should 
+    std::cout<<"In Broadcast\n";
     myROB.rob_capture_results(b_vec);
     for(int j=0; j<units.size(); j++)
     {
@@ -110,7 +111,11 @@ void Processor::stageDecode() {
             temp_rs_entry.src1_tag=myRAT.get_alias(D_reg.inst.src1);
             temp_rs_entry.src2_tag=myRAT.get_alias(D_reg.inst.src2);
         }
-        
+        std::cout<<"RS entry details: src1_valid "<<temp_rs_entry.src1_valid<<" src1_value "<<temp_rs_entry.src1_value<<" src1_tag "<<temp_rs_entry.src1_tag<<"\n";
+        std::cout<<"RS entry details: src2_valid "<<temp_rs_entry.src2_valid<<" src2_value "<<temp_rs_entry.src2_value<<" src2_tag "<<temp_rs_entry.src2_tag<<"\n";
+        temp_rs_entry.imm_value = D_reg.inst.imm;
+        temp_rs_entry.dest_value = D_reg.inst.dest;
+        myRAT.add_to_RAT(D_reg.inst.dest, temp_rs_entry.ROB_Entry); 
         //push to appropriate reservation station too.
         std::cout<<"Pushing to RS of execution unit "<<uId<<" with ROB tag "<<temp_rs_entry.ROB_Entry<<"\n";
         units[uId].pushToRS(temp_rs_entry);
@@ -133,6 +138,7 @@ void Processor::stageExecuteAndBroadcast() {
         }
     } //the broadcast vector now contains all the results of the calculations.
     //tell all execution units to get a new entry in the works too.
+    std::cout<<"Broadcasting results to CDB.\n";
     broadcastOnCDB(broadcast_vector);
 }
 
@@ -143,6 +149,7 @@ void Processor::stageCommit() {
     if(myROB.pop()){
         if (idx>=0) ARF[idx] = entry.dest_regVal; // Prevent initial crash because of -1 access etcetera.
         myRAT.rem_from_RAT(idx); // was crashing from out of bound access.
+        std::cout<<"Committed ROB entry with dest reg "<<idx<<" and value "<<entry.dest_regVal<<"\n";
     }
     else{
         std::cout<<"Cannot commit yet. Either ROB is empty or the oldest entry is not ready.\n";

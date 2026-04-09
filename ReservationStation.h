@@ -2,6 +2,7 @@
 #include "Basics.h"
 #include <vector>
 #include <optional>
+#include <iostream>
 
 class RS {
     private:

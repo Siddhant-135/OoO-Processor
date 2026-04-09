@@ -1,5 +1,5 @@
 #include "ReorderBuffer.h"
-#include <algorithm>
+
 
 
 void ROB::push(Instruction inst){
@@ -32,6 +32,7 @@ void ROB::rob_capture_results(std::vector <std::pair<int, int>> tags_values){
     for(int i=0;i<tags_values.size();i++){
         ROB_Vector[tags_values[i].first].dest_regVal = tags_values[i].second;
         ROB_Vector[tags_values[i].first].ready_from_RS = true;
+        std::cout<<"ROB capture: Updated ROB entry with tag "<<tags_values[i].first<<" to value "<<tags_values[i].second<<"\n";
     }
     return;
 }

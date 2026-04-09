@@ -1,6 +1,8 @@
 #pragma once
 #include "Basics.h"
 #include <vector>
+#include <algorithm>
+#include <iostream>
 
 class ROB {
     private: 

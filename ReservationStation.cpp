@@ -68,10 +68,12 @@ void RS::rs_capture(int tag, int value){
             if(!RS_stage_vector[i].rs_entry.src1_valid && RS_stage_vector[i].rs_entry.ROB_Entry==tag){ // TO CHECK : ROB ENTRY OR SRC1 ENTRY ??
                 RS_stage_vector[i].rs_entry.src1_valid=true;
                 RS_stage_vector[i].rs_entry.src1_value=value;
+                std::cout<<"RS capture: Updated src1 of RS entry with ROB tag "<<tag<<" to value "<<value<<"\n";
             }
             if(!RS_stage_vector[i].rs_entry.src2_valid && RS_stage_vector[i].rs_entry.ROB_Entry==tag){
                 RS_stage_vector[i].rs_entry.src2_valid=true;
                 RS_stage_vector[i].rs_entry.src2_value=value;
+                std::cout<<"RS capture: Updated src2 of RS entry with ROB tag "<<tag<<" to value "<<value<<"\n";
             }
         }
     }

@@ -131,5 +131,6 @@ else{
 
 void ExecutionUnit::exu_capture (int tag, int val)
 {
+    std::cout<<"Execution Unit "<<static_cast<int>(name)<<" capturing on CDB: tag "<<tag<<" value "<<val<<"\n";
     myRS.rs_capture(tag, val);
 }
