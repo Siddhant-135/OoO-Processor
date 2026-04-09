@@ -33,7 +33,7 @@ int RS::get_valid_entry(){//modify its pipeline stage entry to 0
 
 void RS::pushToPipeline(int idx){
     if(idx >= 0 && idx < size){
-        RS_stage_vector[idx].stage=0;
+        RS_stage_vector[idx].stage=1;
     }
     return;    
 }
