@@ -24,7 +24,7 @@ void RS::push(RSEntry temp){ //create the RS vector at the time of decode itself
 int RS::get_valid_entry(){//modify its pipeline stage entry to 0
     for(int i=0;i<size;i++){
         if((RS_stage_vector[i].valid) && RS_stage_vector[i].stage==-1 && RS_stage_vector[i].rs_entry.src1_valid && RS_stage_vector[i].rs_entry.src2_valid){
-            RS_stage_vector[i].stage=0;
+            // RS_stage_vector[i].stage=0;
             return i;
         }
     }
