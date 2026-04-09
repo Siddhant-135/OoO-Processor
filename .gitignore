@@ -5,3 +5,4 @@
 *.out
 main_asan.dYSM/
 main
+parser_dump
