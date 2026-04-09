@@ -24,3 +24,12 @@ run:
 	@echo "Preprocessing $(FILE)..."
 	python3 compiler.py $(FILE)
 	@echo "Preprocessing complete."
+
+# ==========================================
+# make parse FILE=<filename.txt>
+# ==========================================
+# Parse and print decoded instructions for quick parser verification.
+parse:
+	@echo "Parsing $(FILE)..."
+	$(CXX) $(CXXFLAGS) parser_dump.cpp Parser.cpp -o parser_dump
+	./parser_dump $(FILE)
