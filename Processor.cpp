@@ -66,7 +66,7 @@ void Processor::stageDecode() {
         return;
     }
     //cases acc to which instruction it is. But call step to all exe units regardless.
-    if(myROB.is_Full() || units[uId].isRSFull()){/*add RS of desired exe unit full condition*/
+    if(myROB.is_Full() || units[uId].isRSFull()){
         //stall
         return;
     }
@@ -127,7 +127,7 @@ bool Processor::step() {
         flush();
         return false;
     }
-    if (pc >= inst_memory.size()) { // HALTING CONDITION. bool like a flag to stop doing steps.
+    if (pc >= inst_memory.size() + 20) { // HALTING CONDITION. bool like a flag to stop doing steps.
         return false;
     }
     stageCommit();
