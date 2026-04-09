@@ -7,10 +7,10 @@ enum class UnitType { ADDER, MULTIPLIER, DIVIDER, LOADSTORE, BRANCH, LOGIC };
 
 struct Instruction {
     OpCode op;
-    int dest;
-    int src1;
-    int src2;
-    int imm;
+    int dest = -1;
+    int src1 = -1;
+    int src2 = -1;
+    int imm = -1;
     int pc;
 };
 

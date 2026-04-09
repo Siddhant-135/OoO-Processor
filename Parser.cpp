@@ -26,18 +26,47 @@ std::optional<OpCode> Parser::parseOperation(std::string_view first_token)
     else return std::nullopt;
 };
 
+int Parser::forward_pass_fixup(const std::string& label, int inst_number, std::vector<std::pair<int, std::string>>& pending_label_fixups)
+{
+    int target = -1;
+    for (const auto& p : inst_alias) {
+        if (p.first == label) {
+            target = p.second;
+            break;
+        }
+    }
+    if (target == -1) {
+        pending_label_fixups.push_back({inst_number, label});
+        return 0;
+    }
+    return target;
+}
+
+void Parser::backward_pass_fixup(std::vector<Instruction>& inst_memory, const std::vector<std::pair<int, std::string>>& pending_label_fixups)
+{
+    for (const auto& fixup : pending_label_fixups) {
+        int inst_idx = fixup.first;
+        const std::string& label = fixup.second;
+        inst_memory[inst_idx].imm = Parser::getValue(inst_alias, label);
+    }
+}
+
 void Parser::parseFile(std::ifstream& file, std::vector<Instruction>& inst_memory, std::vector<int>& memory)
 {
+    inst_alias.clear();
+    mem_alias.clear();
     std::string line;
     int inst_number = 0;
     int mem_location = 0;
+    std::vector<std::pair<int, std::string>> pending_label_fixups;
     while (std::getline(file, line)) 
     {
         std::istringstream iss(line); // 4 options: could be a tag, or a operation, or a comment hash, or a memory declaration
         std::string first_word;
         iss >> first_word;
 // ARITHMETIC OPERATIONS, BRANCHES, JUMPS == pushback inst to inst_memory 
-        if (parseOperation(first_word).has_value())
+        if(first_word.empty() || first_word[0]=='#') continue; // comment line, ignore
+        else if (parseOperation(first_word).has_value())
         {
             OpCode op = parseOperation(first_word).value();
             Instruction inst;
@@ -76,13 +105,13 @@ void Parser::parseFile(std::ifstream& file, std::vector<Instruction>& inst_memor
                 iss >> src1 >> src2 >> label;
                 inst.src1 = std::stoi(src1.substr(1));
                 inst.src2 = std::stoi(src2.substr(1));
-                inst.imm = Parser::getValue(inst_alias, label); // Implementation: if condition holds on src1 and src2, otherwise pc++ as normal. 
+                inst.imm = forward_pass_fixup(label, inst_number, pending_label_fixups);
             }
             else if (op==OpCode::J)
             {
                 std::string label;
                 iss >> label;
-                inst.imm = Parser::getValue(inst_alias, label); // Implementation: set pc = imm. 
+                inst.imm = forward_pass_fixup(label, inst_number, pending_label_fixups);
             }
             else if (op==OpCode::ADDI || op==OpCode::SLTI || op==OpCode::ANDI || op==OpCode::ORI || op==OpCode::XORI)
             {
@@ -116,23 +145,25 @@ void Parser::parseFile(std::ifstream& file, std::vector<Instruction>& inst_memor
                 memory.push_back(val);
                 mem_location++;
             }
-            break;
+            continue;
         }
 // PC LABEL DECLARATIONS == push label, pointed pc into instruction alias 
         else if (first_word[first_word.length() - 1]==':')
         {
             std::string label_name = first_word.substr(0, first_word.length()-1);
-            inst_alias.push_back({label_name, (inst_number+1)}); // label points to the instruction after it so + 1. Everything is 0 indexed btw.
-            break;
+            inst_alias.push_back({label_name, inst_number}); // label points to the current next instruction index in stream.
+            continue;
         }
 
         else{
             throw std::runtime_error("File is corrupted in its input");
         }
     }
+
+    backward_pass_fixup(inst_memory, pending_label_fixups);
 }
 // FINDS location at which a label or memory tag is stored in the actual alias table.
-int Parser::getValue(std::vector<std::pair<std::string_view, int>>& aliastable, std::string_view name)
+int Parser::getValue(const std::vector<std::pair<std::string, int>>& aliastable, std::string_view name)
 {
     for (auto& pair : aliastable)
     {

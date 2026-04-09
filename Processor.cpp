@@ -8,7 +8,6 @@ Processor::Processor(ProcessorConfig& config) :myROB(config.rob_size), myRAT(con
     // Instantiate Hardware Units
     ARF.resize(config.num_regs, 0);
     Memory.resize(config.mem_size, 0);
-    Parser myparser = Parser();
 
     // Keeping unit ordering stable for consistent index assumptions elsewhere:
     // ADDER, MULTIPLIER, DIVIDER, BRANCH, LOADSTORE, LOGIC
