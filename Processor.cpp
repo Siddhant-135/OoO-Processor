@@ -116,10 +116,13 @@ void Processor::stageExecuteAndBroadcast() {
 }
 
 void Processor::stageCommit() {
-    ROBEntry entry = myROB.to_be_commited_entry();
+    ROBEntry entry = myROB.to_be_commited_entry(); //Returns oldest entry.
+    std::cout<<"Trying to commit ROB entry with dest reg "<<entry.dest_regId<<" and value "<<entry.dest_regVal<<"\n";
     int idx = entry.dest_regId;
-    if(idx>=0) ARF[idx] = entry.dest_regVal; // Prevent initial crash because of -1 access etcetera.
-    if (myROB.pop()) myRAT.rem_from_RAT(idx); // was crashing from out of bound access.
+    if(myROB.pop()){
+        if (idx>=0) ARF[idx] = entry.dest_regVal; // Prevent initial crash because of -1 access etcetera.
+        myRAT.rem_from_RAT(idx); // was crashing from out of bound access.
+    }
 };
     
 bool Processor::step() {
