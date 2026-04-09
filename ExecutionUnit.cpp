@@ -122,7 +122,7 @@ else{
 }
 }
 
-void ExecutionUnit::capture (int tag, int val)
+void ExecutionUnit::exu_capture (int tag, int val)
 {
-    myRS.capture(tag, val);
+    myRS.rs_capture(tag, val);
 }

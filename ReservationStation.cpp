@@ -55,7 +55,7 @@ void RS::invalidate_entry(int idx){
     return;
 }
 
-void RS::capture(int tag, int value){
+void RS::rs_capture(int tag, int value){
     for(int i=0;i<size;i++){
         if(RS_stage_vector[i].valid){
             if(!RS_stage_vector[i].rs_entry.src1_valid && RS_stage_vector[i].rs_entry.ROB_Entry==tag){ // TO CHECK : ROB ENTRY OR SRC1 ENTRY ??

@@ -1,7 +1,7 @@
 #include "Processor.h"
 
 // SETUP
-Processor::Processor(ProcessorConfig& config) :myROB(config.rob_size){
+Processor::Processor(ProcessorConfig& config) :myROB(config.rob_size), myRAT(config.num_regs){
     pc = 0;
     clock_cycle = 0;
 
@@ -9,7 +9,6 @@ Processor::Processor(ProcessorConfig& config) :myROB(config.rob_size){
     ARF.resize(config.num_regs, 0);
     Memory.resize(config.mem_size, 0);
     Parser myparser = Parser();
-    RAT myrat = RAT();
 
     // Keeping unit ordering stable for consistent index assumptions elsewhere:
     // ADDER, MULTIPLIER, DIVIDER, BRANCH, LOADSTORE, LOGIC
@@ -30,12 +29,12 @@ void Processor::loadProgram(const std::string& filename) {
 void Processor::flush() {};
 
 void Processor::broadcastOnCDB( std::vector<std::pair<int,int>> b_vec){
-    //each ROB entry should capture, each Execution Unit should capture
-    myROB.capture_results(b_vec);
+    //each ROB entry should , each Execution Unit should 
+    myROB.rob_capture_results(b_vec);
     for(int j=0; j<units.size(); j++)
     {
         for(int i =0; i<b_vec.size(); i++){
-            units[j].capture(b_vec[i].first,b_vec[i].second);
+            units[j].exu_capture (b_vec[i].first,b_vec[i].second);
         }
     }
 }
@@ -119,11 +118,10 @@ void Processor::stageExecuteAndBroadcast() {
 void Processor::stageCommit() {
     ROBEntry entry = myROB.to_be_commited_entry();
     int idx = entry.dest_regId;
-    ARF[idx] = entry.dest_regVal;
-    myROB.pop();
-    myRAT.rem_from_RAT(idx);
+    if(idx>=0) ARF[idx] = entry.dest_regVal; // Prevent initial crash because of -1 access etcetera.
+    if (myROB.pop()) myRAT.rem_from_RAT(idx); // was crashing from out of bound access.
 };
-
+    
 bool Processor::step() {
     if (exception) {
         flush();

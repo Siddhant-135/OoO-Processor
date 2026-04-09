@@ -42,7 +42,7 @@ class RS {
 
     RSEntry& get_entry(int idx){ return RS_stage_vector[idx].rs_entry; } // much better: single point access to everything
 
-    void capture(int tag, int value);
+    void rs_capture(int tag, int value);
     bool hasPendingWork(){
         for (int i = 0; i < size; i++) {
             if (RS_stage_vector[i].valid) {

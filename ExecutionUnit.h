@@ -23,7 +23,7 @@ public:
     // API for the UnitType to OpCode classification.
     static UnitType getUnitTypeForOp(OpCode op);
     //methods
-    void capture(int tag, int val);  
+    void exu_capture (int tag, int val);  
     //to run every cycle.
     std::pair<int,int> executeCycle();
     //add operation function

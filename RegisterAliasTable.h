@@ -15,7 +15,9 @@ class RAT{
 
     public:
     //functions: modify ROB at index: addEntry
-    RAT(){};
+    RAT(int num_regs){
+        RAT_vector.resize(num_regs);
+    }
     void add_to_RAT (int idx, int ROBId);
     //removeEntry: return it to valid and -1
     void rem_from_RAT (int idx);

@@ -13,6 +13,6 @@ public:
     bool has_exception = false; // exception flag
     int store_data = 0;
     
-    void capture(int tag, int val) {};
+    void lsq_capture (int tag, int val) {};
     void executeCycle(std::vector<int>& Memory) {};
 };
