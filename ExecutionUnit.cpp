@@ -93,8 +93,10 @@ if(idx!=-1){
     else if(name == UnitType::LOADSTORE){//LW, SW  
         if(op == OpCode::LW)
         output = memory[src1 + imm]; 
-        else if(op == OpCode::SW)
-        output = memory[dest + imm];
+        else if(op == OpCode::SW){
+            memory[dest+imm] = src1;
+            output = memory[dest + imm];
+        }       
     }
     else{//(name == UnitType::LOGIC)  SLT, SLTI, AND, OR, XOR, ANDI, ORI, XORI  IMMEDIATE HANDLING IS AGAIN NECESSARY.
         if(op == OpCode::AND)
