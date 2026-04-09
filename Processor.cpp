@@ -54,6 +54,7 @@ void Processor::stageFetch() {
         return;
     }
     F_reg.inst = inst_memory[pc];
+    std::cout<<"pc: "<<pc<<" fetched instruction with opcode "<<static_cast<int>(F_reg.inst.op)<<"\n";
     pc += 1;
 }
 
@@ -62,15 +63,19 @@ void Processor::stageDecode() {
     D_reg.inst = F_reg.inst;
     OpCode op = D_reg.inst.op;
     int uId = getUnitIdx(op);
+    std::cout<<"Decoded instruction with opcode "<<static_cast<int>(D_reg.inst.op)<<" for execution unit "<<uId<<"\n";
     if (uId == -1) {
+        std::cout<<"Unsupported opcode encountered during decode. Halting.\n";
         return;
     }
     //cases acc to which instruction it is. But call step to all exe units regardless.
     if(myROB.is_Full() || units[uId].isRSFull()){
         //stall
+        std::cout<<"Stalling at decode stage due to full ROB or RS.\n";
         return;
     }
     else{
+        std::cout<<"Pushing instruction to ROB and RS for execution unit "<<uId<<"\n";
         myROB.push(D_reg.inst);
         RSEntry temp_rs_entry;
         temp_rs_entry.ROB_Entry = myROB.newest_entry_idx();
@@ -95,6 +100,7 @@ void Processor::stageDecode() {
         }
         
         //push to appropriate reservation station too.
+        std::cout<<"Pushing to RS of execution unit "<<uId<<" with ROB tag "<<temp_rs_entry.ROB_Entry<<"\n";
         units[uId].pushToRS(temp_rs_entry);
     }
 };
@@ -105,8 +111,11 @@ void Processor::stageExecuteAndBroadcast() {
     std::pair<int,int> temp;
     std::vector <std::pair<int,int>> broadcast_vector;
     for(int i=0;i<units.size();i++){
+        std::cout<<"Executing unit "<<i<<"\n";
         temp = units[i].executeCycle();
+        std::cout<<"Execution result: tag "<<temp.first<<" value "<<temp.second<<"\n";
         if(temp.first != -1){
+        std::cout<<"Adding to broadcast vector: tag "<<temp.first<<" value "<<temp.second<<"\n";
         broadcast_vector.push_back(temp);
         units[i].loadToPipeline();
         }
@@ -130,7 +139,7 @@ bool Processor::step() {
         flush();
         return false;
     }
-    if (pc >= inst_memory.size() + 20) { // HALTING CONDITION. bool like a flag to stop doing steps.
+    if (pc >= inst_memory.size() + 8) { // HALTING CONDITION. bool like a flag to stop doing steps.
         return false;
     }
     stageCommit();
