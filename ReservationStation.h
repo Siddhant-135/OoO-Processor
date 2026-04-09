@@ -2,6 +2,7 @@
 #include "Basics.h"
 #include <vector>
 #include <optional>
+#include <iostream>
 
 class RS {
     private:
@@ -17,7 +18,9 @@ class RS {
     int counter;
     int stage_lat;
 
+
     public:
+    int PipelineCounter;
     RS(int size, int pipeline_size, int stage_lat){
         this->size=size;
         RS_stage_vector.resize(size);
@@ -28,8 +31,8 @@ class RS {
         this->pipeline_size=pipeline_size;
         this->stage_lat=stage_lat;
         this->counter=0;
-    }
-
+        this->PipelineCounter=0;
+    }  
     bool isFull();
 
     void push(RSEntry temp);//an O(n) search.
@@ -40,9 +43,12 @@ class RS {
 
     void invalidate_entry(int idx);
 
+    void pushToPipeline(int idx); // pushes the ready entry to the pipeline. Called by the execution unit when it is ready to accept a new entry. Also updates the pipeline stage of the entry.
+
     RSEntry& get_entry(int idx){ return RS_stage_vector[idx].rs_entry; } // much better: single point access to everything
 
     void rs_capture(int tag, int value);
+
     bool hasPendingWork(){
         for (int i = 0; i < size; i++) {
             if (RS_stage_vector[i].valid) {

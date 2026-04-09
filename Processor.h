@@ -15,6 +15,7 @@
 
 struct Pipeline_reg{
     Instruction inst;
+    bool valid = false; // to control the 1st inst.
 };
 
 class Processor {

@@ -116,13 +116,21 @@ if(idx!=-1){
     }
     return std::make_pair(tag, output); 
     myRS.invalidate_entry(idx);
+    myRS.PipelineCounter--;
+    if(myRS.PipelineCounter<latency){//see fix, divide latency by stages per instruction.
+        loadToPipeline();
+    }
 }
 else{
+    if(myRS.PipelineCounter<latency){//see fix, divide latency by stages per instruction.
+        loadToPipeline();
+        }
     return std::make_pair(-1,-1);
 }
 }
 
 void ExecutionUnit::exu_capture (int tag, int val)
 {
+    std::cout<<"Execution Unit "<<static_cast<int>(name)<<" capturing on CDB: tag "<<tag<<" value "<<val<<"\n";
     myRS.rs_capture(tag, val);
 }

@@ -29,6 +29,7 @@ void Processor::flush() {};
 
 void Processor::broadcastOnCDB( std::vector<std::pair<int,int>> b_vec){
     //each ROB entry should , each Execution Unit should 
+    std::cout<<"In Broadcast\n";
     myROB.rob_capture_results(b_vec);
     for(int j=0; j<units.size(); j++)
     {
@@ -49,17 +50,27 @@ int Processor::getUnitIdx(OpCode op){
 }
 
 void Processor::stageFetch() {
-    if (pc >= inst_memory.size()) {
+    if (pc >= inst_memory.size() || F_reg.valid) {
+        std::cout<<pc<<"PC has exceeded instruction memory. "<<inst_memory.size()<< " No more instructions to fetch.\n";
         return;
     }
     F_reg.inst = inst_memory[pc];
     std::cout<<"pc: "<<pc<<" fetched instruction with opcode "<<static_cast<int>(F_reg.inst.op)<<"\n";
+    F_reg.valid = true;
     pc += 1;
 }
 
 void Processor::stageDecode() {
     //we think decode never stalls. // I support her thesis for now.
+    //need control for the 1st instruction: 
+    //valid bit in F_reg, D_reg
+    if(!F_reg.valid){
+        std::cout<<"No valid instruction in fetch register to decode.\n";
+        return;
+    }
     D_reg.inst = F_reg.inst;
+    F_reg.valid = false; // remains false until next fetch.
+    D_reg.valid = true;
     OpCode op = D_reg.inst.op;
     int uId = getUnitIdx(op);
     std::cout<<"Decoded instruction with opcode "<<static_cast<int>(D_reg.inst.op)<<" for execution unit "<<uId<<"\n";
@@ -70,6 +81,8 @@ void Processor::stageDecode() {
     //cases acc to which instruction it is. But call step to all exe units regardless.
     if(myROB.is_Full() || units[uId].isRSFull()){
         //stall
+        if(myROB.is_Full()) std::cout<<"Stalling at decode stage due to full ROB.\n";
+        else std::cout<<"Stalling at decode stage due to full RS of execution unit "<<uId<<".\n";
         std::cout<<"Stalling at decode stage due to full ROB or RS.\n";
         return;
     }
@@ -81,7 +94,7 @@ void Processor::stageDecode() {
         temp_rs_entry.op = D_reg.inst.op;
         temp_rs_entry.src1_valid = myRAT.reg_valid(D_reg.inst.src1);
         temp_rs_entry.src2_valid = myRAT.reg_valid(D_reg.inst.src2);
-        if(temp_rs_entry.src1_valid && temp_rs_entry.src1_valid){
+        if(temp_rs_entry.src1_valid && temp_rs_entry.src2_valid){
             temp_rs_entry.src1_value=ARF[D_reg.inst.src1];
             temp_rs_entry.src2_value=ARF[D_reg.inst.src2];
         }
@@ -97,7 +110,11 @@ void Processor::stageDecode() {
             temp_rs_entry.src1_tag=myRAT.get_alias(D_reg.inst.src1);
             temp_rs_entry.src2_tag=myRAT.get_alias(D_reg.inst.src2);
         }
-        
+        std::cout<<"RS entry details: src1_valid "<<temp_rs_entry.src1_valid<<" src1_value "<<temp_rs_entry.src1_value<<" src1_tag "<<temp_rs_entry.src1_tag<<"\n";
+        std::cout<<"RS entry details: src2_valid "<<temp_rs_entry.src2_valid<<" src2_value "<<temp_rs_entry.src2_value<<" src2_tag "<<temp_rs_entry.src2_tag<<"\n";
+        temp_rs_entry.imm_value = D_reg.inst.imm;
+        temp_rs_entry.dest_value = D_reg.inst.dest;
+        myRAT.add_to_RAT(D_reg.inst.dest, temp_rs_entry.ROB_Entry); 
         //push to appropriate reservation station too.
         std::cout<<"Pushing to RS of execution unit "<<uId<<" with ROB tag "<<temp_rs_entry.ROB_Entry<<"\n";
         units[uId].pushToRS(temp_rs_entry);
@@ -120,6 +137,7 @@ void Processor::stageExecuteAndBroadcast() {
         }
     } //the broadcast vector now contains all the results of the calculations.
     //tell all execution units to get a new entry in the works too.
+    std::cout<<"Broadcasting results to CDB.\n";
     broadcastOnCDB(broadcast_vector);
 }
 
@@ -130,6 +148,10 @@ void Processor::stageCommit() {
     if(myROB.pop()){
         if (idx>=0) ARF[idx] = entry.dest_regVal; // Prevent initial crash because of -1 access etcetera.
         myRAT.rem_from_RAT(idx); // was crashing from out of bound access.
+        std::cout<<"Committed ROB entry with dest reg "<<idx<<" and value "<<entry.dest_regVal<<"\n";
+    }
+    else{
+        std::cout<<"Cannot commit yet. Either ROB is empty or the oldest entry is not ready.\n";
     }
 };
     
@@ -141,6 +163,7 @@ bool Processor::step() {
     if (pc >= inst_memory.size() + 8) { // HALTING CONDITION. bool like a flag to stop doing steps.
         return false;
     }
+    std::cout<<"pc: "<<pc<<" clock cycle: "<<clock_cycle<<"\n";
     stageCommit();
     stageExecuteAndBroadcast();
     stageDecode();
