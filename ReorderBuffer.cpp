@@ -19,6 +19,7 @@ bool ROB::pop(){
         return false;
     }
     //also deallocate the RAT ki place.
+    if(!ROB_Vector[oldest_entry_idx].ready_from_RS) return false; // if the entry is not ready, we cannot pop it. This is the only condition for not popping, because we want to commit in order.
     ROB_Vector[oldest_entry_idx].valid = false;
     oldest_entry_idx = (oldest_entry_idx+1)%capacity;
     number_of_entries--;

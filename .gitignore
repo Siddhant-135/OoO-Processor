@@ -1,3 +1,6 @@
 .vscode/
 .env
 .DS_Store
+*.o
+*.out
+main_asan.dYSM/

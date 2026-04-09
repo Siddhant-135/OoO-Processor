@@ -24,6 +24,10 @@ int main(int argc, char* argv[]) {
         cerr << "Failed to parse instruction file.\n";
         return 1;
     }
+    //Added to test code0.
+    cpu.ARF[0] = 0; // Ensure x0 is always 0 as per RISC-V spec.
+    cpu.ARF[1] = 5; // Example initial value for testing, can be modified or removed as needed.
+    cpu.ARF[2] = 10; // Example initial value for testing, can be modified or removed as needed.
 
     int cycle_count = 0;
     while (cpu.step()) {
