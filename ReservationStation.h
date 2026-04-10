@@ -5,7 +5,7 @@
 #include <iostream>
 
 class RS {
-    private:
+    protected:
     struct RS_triple{
         bool valid;
         RSEntry rs_entry;
@@ -35,9 +35,9 @@ class RS {
     }  
     bool isFull();
 
-    void push(RSEntry temp);//an O(n) search.
+    virtual void push(RSEntry temp);//an O(n) search.
 
-    int get_valid_entry(); //method to iterate linearly and find the ready entry: optional result? returns index of ready entry. -1 if none yet. Also puts the ready rnetry in pipleine.
+    virtual int get_valid_entry(); //method to iterate linearly and find the ready entry: optional result? returns index of ready entry. -1 if none yet.
 
     int update_rs(); // update_rs(), returns index.
 
