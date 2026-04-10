@@ -2,13 +2,15 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <memory>
 #include "Basics.h"
 #include "ReservationStation.h"
+#include "LoadStoreQueue.h"
 
 class ExecutionUnit {
 private:
     std::vector<int>& memory; // common memory throughout (mainly for LW, SW)
-    RS myRS; // associated reservation station
+    std::unique_ptr<RS> myRS; // associated reservation station
 
 public:
     // per-unit reservation station
@@ -31,19 +33,19 @@ public:
     int mul(int src1, int src2){return src1*src2;} 
     int div(int src1, int src2){return src1/src2;} // truncated
 
-    bool isRSFull(){return myRS.isFull();}
-    bool hasPendingWork() { return myRS.hasPendingWork(); }
+    bool isRSFull(){return myRS->isFull();}
+    bool hasPendingWork() { return myRS->hasPendingWork(); }
 
-    void pushToRS(RSEntry temp){myRS.push(temp);}
+    void pushToRS(RSEntry temp){myRS->push(temp);}
     
     void loadToPipeline(){
-        if(myRS.get_valid_entry()==-1){
+        if(myRS->get_valid_entry()==-1){
             std::cout<<"No RS entry ready yet!";
         } else {
-            int idx = myRS.get_valid_entry();
-            myRS.pushToPipeline(idx);
-            std::cout<<"Added new entry to execution pipeline of unit "<<static_cast<int>(name)<<" with ROB tag "<<myRS.get_entry(idx).ROB_Entry<<"\n";
-            myRS.PipelineCounter++;
+            int idx = myRS->get_valid_entry();
+            myRS->pushToPipeline(idx);
+            std::cout<<"Added new entry to execution pipeline of unit "<<static_cast<int>(name)<<" with ROB tag "<<myRS->get_entry(idx).ROB_Entry<<"\n";
+            myRS->PipelineCounter++;
         }
     }
 };

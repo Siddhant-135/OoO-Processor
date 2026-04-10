@@ -5,9 +5,15 @@
 // int logic_rs_size = 4; adder_rs_size = 4; int mult_rs_size = 2; int div_rs_size = 2; int br_rs_size = 2; 
 // int lsq_rs_size = 32;
 
-ExecutionUnit::ExecutionUnit(UnitType name, int latency, int RS_size, std::vector<int>& memory): memory(memory), myRS(RS_size, latency, 1) { 
+ExecutionUnit::ExecutionUnit(UnitType name, int latency, int RS_size, std::vector<int>& memory): memory(memory){ 
 this->name=name;
 this->latency=latency;
+
+if(name == UnitType::LOADSTORE){
+    myRS = std::unique_ptr<RS>(std::make_unique<LoadStoreQueue>(RS_size, latency, 1));
+} else {
+    myRS = std::unique_ptr<RS>(std::make_unique<RS>(RS_size, latency, 1)); 
+}
 }
 
 UnitType ExecutionUnit::getUnitTypeForOp(OpCode op) {
@@ -48,9 +54,9 @@ UnitType ExecutionUnit::getUnitTypeForOp(OpCode op) {
 // also broadcast via the return.
 
 std::pair<int, int> ExecutionUnit::executeCycle(){ //arguments: none, return int: ROB tag, val: the result of the calculation. 
-int idx = myRS.update_rs(); //returns index of the entry that has completed the pipeline.
+int idx = myRS->update_rs(); //returns index of the entry that has completed the pipeline.
 if(idx!=-1){
-    const RSEntry& rs_entry = myRS.get_entry(idx);
+    const RSEntry& rs_entry = myRS->get_entry(idx);
     int src1 = rs_entry.src1_value;
     int src2 = rs_entry.src2_value;
     int imm = rs_entry.imm_value; 
@@ -117,14 +123,14 @@ if(idx!=-1){
         output = int (src1 < src2);
     }
     return std::make_pair(tag, output); 
-    myRS.invalidate_entry(idx);
-    myRS.PipelineCounter--;
-    if(myRS.PipelineCounter<latency){//see fix, divide latency by stages per instruction.
+    myRS->invalidate_entry(idx);
+    myRS->PipelineCounter--;
+    if(myRS->PipelineCounter<latency){//see fix, divide latency by stages per instruction.
         loadToPipeline();
     }
 }
 else{
-    if(myRS.PipelineCounter<latency){//see fix, divide latency by stages per instruction.
+    if(myRS->PipelineCounter<latency){//see fix, divide latency by stages per instruction.
         loadToPipeline();
         }
     return std::make_pair(-1,-1);
@@ -134,5 +140,5 @@ else{
 void ExecutionUnit::exu_capture (int tag, int val)
 {
     std::cout<<"Execution Unit "<<static_cast<int>(name)<<" capturing on CDB: tag "<<tag<<" value "<<val<<"\n";
-    myRS.rs_capture(tag, val);
+    myRS->rs_capture(tag, val);
 }
