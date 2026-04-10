@@ -28,6 +28,7 @@ public:
     void exu_capture (int tag, int val);  
     //to run every cycle.
     std::pair<int,int> executeCycle();
+    void reset();
     //add operation function
     int add(int src1, int src2){return src1+src2;} // Group-theretically correct implementaion.
     int mul(int src1, int src2){return src1*src2;} 
