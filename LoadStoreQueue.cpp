@@ -10,7 +10,7 @@ void LoadStoreQueue::push(RSEntry temp){
     return;    
 }  
 
-// TO DO: FORWARDING FOR LOAD AFTER STORE.
+// TO DO: FORWARDING FOR LOAD AFTER STORE.//THIS FUNCTION IS INCORRECT, NEEDS TO SEE THE LOAD AFTER STORE AD STORE AFTER LOAD CONFLICT AND THEN GET THE VALID ENTRY.
 int LoadStoreQueue::get_valid_entry(){
     // go down from oldest to as long as stuff is valid
     int idx = -1;
@@ -18,7 +18,10 @@ int LoadStoreQueue::get_valid_entry(){
         if(!RS_stage_vector[i].valid){
             return -1;
         }
-        else if(RS_stage_vector[i].stage==-1 && RS_stage_vector[i].rs_entry.src1_valid){ // Othere fields are dest and immediate, they are always valid.
+        else if(RS_stage_vector[i].stage==-1 && RS_stage_vector[i].rs_entry.op==OpCode::LW && RS_stage_vector[i].rs_entry.src1_valid){ // Othere field is immediate, they are always valid.
+            return i;
+        }
+        else if(RS_stage_vector[i].stage==-1 && RS_stage_vector[i].rs_entry.op==OpCode::SW && RS_stage_vector[i].rs_entry.src1_valid && RS_stage_vector[i].rs_entry.dest_valid){ // Othere field is immediate, they are always valid.
             return i;
         }
     }

@@ -6,12 +6,12 @@ enum class UnitType { ADDER, MULTIPLIER, DIVIDER, LOADSTORE, BRANCH, LOGIC };
 //a set of UnitTypes for nonpipelined instructions. Empty, all are pipelined
 
 struct Instruction {
-    OpCode op;
-    int dest;
-    int src1;
-    int src2;
-    int imm;
-    int pc;
+    OpCode op = OpCode::ADD; // default value, will be overwritten by parser.
+    int dest = -1; // architectural register ID. -1 if no destination (eg for SW, BEQ etc).
+    int src1 = -1; // architectural register ID. -1 if no source (eg for J).
+    int src2 = -1;
+    int imm = 0;
+    int pc = 0;
 };
 
 struct ProcessorConfig {
@@ -39,16 +39,16 @@ struct ROBEntry {
     bool valid = false;
     bool ready_from_RS= false; //always ready to go to RS. This is instead bool for "has it received a value from RS" 
     int dest_regId = -1; 
-    int dest_regVal; //just store the dest_regVal. What about memory? NOT IN ROB
+    int dest_regVal = -1; //just store the dest_regVal. What about memory? NOT IN ROB
 };
 
 struct RSEntry {
     // value, tag, ready ... for both operands
     // other fields as required
     //3 resevation stations: add, mul, div.
-    bool src1_valid, src2_valid;
-    int src1_tag, src2_tag, src1_value, src2_value;
-    int imm_value, dest_value; 
-    int ROB_Entry;
-    OpCode op;
+    bool src1_valid = false, src2_valid = false, dest_valid = false;
+    int src1_tag = -1, src2_tag = -1, src1_value = -1, src2_value = -1;
+    int imm_value = 0, dest_value = -1;
+    int ROB_Entry = -1;
+    OpCode op = OpCode::ADD;
 };

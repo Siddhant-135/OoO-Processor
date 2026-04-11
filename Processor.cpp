@@ -161,9 +161,13 @@ bool Processor::step() {
         flush();
         return false;
     }
-    if (pc >= inst_memory.size() + 8) { // HALTING CONDITION. bool like a flag to stop doing steps.
+    if(myROB.is_Empty() && pc >= inst_memory.size()){
+        std::cout<<"clock cycle: "<<clock_cycle<<" No more instructions to commit and no more instructions to fetch. Halting.\n";
         return false;
     }
+    // if (pc >= inst_memory.size() + 8) { // HALTING CONDITION. bool like a flag to stop doing steps.
+    //     return false;
+    // }
     std::cout<<"pc: "<<pc<<" clock cycle: "<<clock_cycle<<"\n";
     stageCommit();
     stageExecuteAndBroadcast();
