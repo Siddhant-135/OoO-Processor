@@ -163,6 +163,9 @@ void Processor::stageDecode() {
         //push to appropriate reservation station too.
         std::cout<<"Pushing to RS of execution unit "<<uId<<" with ROB tag "<<temp_rs_entry.ROB_Entry<<"\n";
         units[uId].pushToRS(temp_rs_entry);
+        
+        // Reset decode register valid flag meaning we've fully dispatched this instruction
+        D_reg.valid = false;
     }
 };
 
@@ -204,17 +207,20 @@ void Processor::stageCommit() {
         if (taken) actual_next_pc = pred_info.target_pc;
         else actual_next_pc = pred_info.fallthrough_pc; //repetitive, but we learn by repetition
         bool was_correct = (actual_next_pc == pred_info.predicted_next_pc);
-        bp.update(pred_info.fetch_pc, taken, was_correct);
+        bp.update(pred_info.fetch_pc, taken, was_correct); //update the FSM.
 
         if (actual_next_pc != pred_info.predicted_next_pc) {
             std::cout<<"Branch misprediction at PC "<<pred_info.fetch_pc<<". Flushing younger instructions.\n";
             pc = actual_next_pc;
+            myROB.pop(); // THE ENTRY IS READY SO POP IS WORKING.
             flush();
             flushed_this_cycle = true;
             return;
         }
         else{
             std::cout<<"Branch prediction correct for branch at PC "<<pred_info.fetch_pc<<".\n";
+            myROB.pop(); // THE ENTRY IS READY SO POP IS WORKING.
+            return;
         }
     }
 
@@ -243,14 +249,18 @@ bool Processor::step() {
         flush();
         return false;
     }
-    if(myROB.is_Empty() && pc >= inst_memory.size() && clock_cycle > 1){ 
-        std::cout<<"clock cycle: "<<clock_cycle<<" No more instructions to commit and no more instructions to fetch. Halting.\n";
+    
+    // PERFECT HALTING CONDITION:
+    // 1. No more instructions in memory to fetch (pc >= inst_memory.size())
+    // 2. Fetch register has transferred its contents (!F_reg.valid)
+    // 3. Decode register has dispatched its contents (!D_reg.valid)
+    // 4. All dispatched instructions have committed (myROB.is_Empty())
+    if(pc >= inst_memory.size() && !F_reg.valid && !D_reg.valid && myROB.is_Empty()){ 
+        std::cout<<"\n[+] Execution complete! Total clock cycles: "<<clock_cycle<<"\n";
         return false;
     }
-    // if (pc >= inst_memory.size() + 8) { // HALTING CONDITION. bool like a flag to stop doing steps.
-    //     return false;
-    // }
-    std::cout<<"pc: "<<pc<<" clock cycle: "<<clock_cycle<<"\n";
+
+    std::cout<<"\n--- CYCLE "<<clock_cycle<<" (PC: "<<pc<<") ---\n";
     stageCommit();
     if (flushed_this_cycle) {
         clock_cycle++;
