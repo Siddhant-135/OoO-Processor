@@ -41,11 +41,11 @@ public:
     
     void loadToPipeline(){
         if(myRS->get_valid_entry()==-1){
-            std::cout<<"No RS entry ready yet!";
+            std::cout<<"    No RS entry ready yet!\n";
         } else {
             int idx = myRS->get_valid_entry();
             myRS->pushToPipeline(idx);
-            std::cout<<"Added new entry to execution pipeline of unit "<<static_cast<int>(name)<<" with ROB tag "<<myRS->get_entry(idx).ROB_Entry<<"\n";
+            std::cout<<"    Added new entry to execution pipeline of unit "<<static_cast<int>(name)<<" with ROB tag "<<myRS->get_entry(idx).ROB_Entry<<"\n";
             myRS->PipelineCounter++;
         }
     }

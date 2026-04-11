@@ -124,12 +124,14 @@ if(idx!=-1){
     }
     myRS->invalidate_entry(idx);
     myRS->PipelineCounter--;
+    std::cout<<"Im here!\n";
     if(myRS->PipelineCounter<latency){//see fix, divide latency by stages per instruction.
         loadToPipeline();
     }
     return std::make_pair(tag, output); 
 }
 else{
+    std::cout<<"Im there!\n";
     if(myRS->PipelineCounter<latency){//see fix, divide latency by stages per instruction.
         loadToPipeline();
         }

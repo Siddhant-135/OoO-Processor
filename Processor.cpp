@@ -174,11 +174,11 @@ void Processor::stageExecuteAndBroadcast() {
     for(int i=0;i<units.size();i++){
         std::cout<<"Executing unit "<<i<<"\n";
         temp = units[i].executeCycle();
-        std::cout<<"Execution result: tag "<<temp.first<<" value "<<temp.second<<"\n";
+        std::cout<<"    Execution result: tag "<<temp.first<<" value "<<temp.second<<"\n";
         if(temp.first != -1){
-        std::cout<<"Adding to broadcast vector: tag "<<temp.first<<" value "<<temp.second<<"\n";
+        std::cout<<"    Adding to broadcast vector: tag "<<temp.first<<" value "<<temp.second<<"\n";
         broadcast_vector.push_back(temp);
-        units[i].loadToPipeline();
+        // units[i].loadToPipeline(); // REDUNDANT & BUGGY: executeCycle() already handles capacity bounds
         }
     } //the broadcast vector now contains all the results of the calculations.
     //tell all execution units to get a new entry in the works too.
@@ -219,25 +219,20 @@ void Processor::stageCommit() {
     }
 
     if(myROB.pop()){
-        if (idx>=0) {ARF[idx] = entry.dest_regVal; // Prevent initial crash because of -1 access in SW, BRANCHES.
-        myRAT.rem_from_RAT(idx); // was crashing from out of bound access.
-        std::cout<<"Committed ROB entry with dest reg "<<idx<<" and value "<<entry.dest_regVal<<"\n";
+        if (idx > 0) { // Protects against -1 (Branches/SW) and 0 (x0 is hardwired to 0)
+            ARF[idx] = entry.dest_regVal;
+            // RAT CLEAR BUG: Only clear RAT if it still points to the commiting instruction
+            if (myRAT.get_alias(idx) == oldest_tag) {
+                myRAT.rem_from_RAT(idx); 
+            }
+            std::cout<<"Committed ROB entry with dest reg "<<idx<<" and value "<<entry.dest_regVal<<"\n";
         }
         else{
-            std::cout<<"Committed ROB entry with no register destination, prolly did for SW or branch and value "<<entry.dest_regVal<<"\n";
+            std::cout<<"Committed ROB entry with no register destination (or x0) and value "<<entry.dest_regVal<<"\n";
         }
     }
-
-    if (idx > 0) { // IDX is just the dest reg id though, It says nothing about the readiness of the value.
-        ARF[idx] = entry.dest_regVal; // Prevent initial crash because of -1 access etcetera.
-        if (myRAT.get_alias(idx) == oldest_tag) {
-            myRAT.rem_from_RAT(idx); // was crashing from out of bound access.
-            myROB.pop();
-        }
+    // REDUNDANT/BUGGY LOGIC REMOVED FROM HERE
     }
-    else{
-        std::cout<<"Committed ROB entry with no register destination, prolly did for SW or branch and value "<<entry.dest_regVal<<"\n";
-    }}
     else{
         std::cout<<"Cannot commit yet. The oldest value isn't ready.\n";}
 };
