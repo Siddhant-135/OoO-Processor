@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-struct BP_info {
+struct BP_info { //MOVE THIS TO BASICS.H
     bool valid = false;
     bool is_conditional = false;
     bool is_jump = false;

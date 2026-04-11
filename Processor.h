@@ -41,7 +41,7 @@ public:
     ROB myROB;
     RAT myRAT;
     std::vector<ExecutionUnit> units;
-    LoadStoreQueue* lsq;
+    // LoadStoreQueue* lsq;
     BranchPredictor bp;
 
     // Parser instance

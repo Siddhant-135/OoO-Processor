@@ -60,14 +60,14 @@ int Processor::getUnitIdx(OpCode op){
 }
 
 void Processor::stageFetch() {
-    if (pc >= inst_memory.size() || F_reg.valid) {
+    if (pc >= inst_memory.size() || F_reg.valid) { // F_reg.valid check is for the case when fetch is stalled so we dont want to overwrite the fetched instruction.
         std::cout<<pc<<"PC has exceeded instruction memory. "<<inst_memory.size()<< " No more instructions to fetch.\n";
         return;
     }
     int current_pc = pc;
     F_reg.inst = inst_memory[current_pc]; 
     F_reg.bp_info = bp.make_prediction_info(current_pc, F_reg.inst.imm, F_reg.inst.op);
-    std::cout<<"pc: "<<current_pc<<" fetched instruction with opcode "<<static_cast<int>(F_reg.inst.op)<<"\n";
+    std::cout<<"pc: "<<current_pc<<" fetched instruction with opcode "<<static_cast<int>(F_reg.inst.op)<<"\n"; //HOW TO MAKE THE OPCODE STRING
     F_reg.valid = true;
     pc = F_reg.bp_info.predicted_next_pc; // complete takeover by bp, pc+=1 bhi isme hi hai, tbf early on bhi conditional daal sakte but works for now.
 }
@@ -212,13 +212,22 @@ void Processor::stageCommit() {
         }
     }
 
+    if(myROB.pop()){
+        if (idx>=0) ARF[idx] = entry.dest_regVal; // Prevent initial crash because of -1 access etcetera.
+        myRAT.rem_from_RAT(idx); // was crashing from out of bound access.
+        std::cout<<"Committed ROB entry with dest reg "<<idx<<" and value "<<entry.dest_regVal<<"\n";
+
+    }
+
     if (idx > 0) {
         ARF[idx] = entry.dest_regVal; // Prevent initial crash because of -1 access etcetera.
         if (myRAT.get_alias(idx) == oldest_tag) {
             myRAT.rem_from_RAT(idx); // was crashing from out of bound access.
+            myROB.pop();
         }
     }
-    std::cout<<"Committed ROB entry with dest reg "<<idx<<" and value "<<entry.dest_regVal<<"\n";
+    else{
+        std::cout<<"Cannot commit yet. Either ROB is empty or the oldest entry is not ready.\n";}
 };
     
 bool Processor::step() {
@@ -227,7 +236,7 @@ bool Processor::step() {
         flush();
         return false;
     }
-    if(myROB.is_Empty() && pc >= inst_memory.size()){
+    if(myROB.is_Empty() && pc >= inst_memory.size() && clock_cycle > 1){ 
         std::cout<<"clock cycle: "<<clock_cycle<<" No more instructions to commit and no more instructions to fetch. Halting.\n";
         return false;
     }
