@@ -57,15 +57,6 @@ int RS::update_rs(){//does op matter here? No, the parent, execution, takes care
     return idx;
 }
 
-void RS::reset() {
-    for (int i = 0; i < size; i++) {
-        RS_stage_vector[i].valid = false;
-        RS_stage_vector[i].stage = -1;
-    }
-    counter = 0;
-    PipelineCounter = 0;
-}
-
 void RS::invalidate_entry(int idx){
     RS_stage_vector[idx].valid=false;
     return;

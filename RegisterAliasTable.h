@@ -25,6 +25,5 @@ class RAT{
     int get_alias (int idx);
     //return whether the register is in a valid state at that time.
     bool reg_valid (int idx);
-    void reset();
     //NO NOTION OF FULLNESS AS A REG CAN ONLY BE ALIASED TO ONE OTHER AT A GIVEN TIME.
 };

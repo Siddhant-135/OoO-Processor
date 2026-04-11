@@ -10,7 +10,6 @@ void ROB::push(Instruction inst){
         ROB_Vector[youngest_entry_idx].ready_from_RS = false;
         ROB_Vector[youngest_entry_idx].dest_regId = inst.dest;//lw, sw are not included in this. 
         ROB_Vector[youngest_entry_idx].dest_regVal = -1;//will be updated upon .
-        ROB_branch_prediction[youngest_entry_idx] = BP_info{};
         number_of_entries++;
     }
 }
@@ -22,7 +21,6 @@ bool ROB::pop(){
     //also deallocate the RAT ki place.
     if(!ROB_Vector[oldest_entry_idx].ready_from_RS) return false; // if the entry is not ready, we cannot pop it. This is the only condition for not popping, because we want to commit in order.
     ROB_Vector[oldest_entry_idx].valid = false;
-    ROB_branch_prediction[oldest_entry_idx] = BP_info{};
     oldest_entry_idx = (oldest_entry_idx+1)%capacity;
     number_of_entries--;
     return true;
@@ -37,17 +35,4 @@ void ROB::rob_capture_results(std::vector <std::pair<int, int>> tags_values){
         std::cout<<"ROB capture: Updated ROB entry with tag "<<tags_values[i].first<<" to value "<<tags_values[i].second<<"\n";
     }
     return;
-}
-
-void ROB::reset() {
-    for (int i = 0; i < capacity; i++) {
-        ROB_Vector[i].valid = false;
-        ROB_Vector[i].ready_from_RS = false;
-        ROB_Vector[i].dest_regId = -1;
-        ROB_Vector[i].dest_regVal = 0;
-        ROB_branch_prediction[i] = BP_info{};
-    }
-    number_of_entries = 0;
-    oldest_entry_idx = 1;
-    youngest_entry_idx = 0;
 }

@@ -27,9 +27,3 @@ int LoadStoreQueue::get_valid_entry(){
     }
     return -1;
 }
-
-void LoadStoreQueue::reset() {
-    RS::reset();
-    youngest_entry = 0;
-    oldest_entry = 1;
-}

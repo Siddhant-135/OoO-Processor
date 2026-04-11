@@ -17,10 +17,3 @@ int RAT::get_alias (int idx){
 bool RAT::reg_valid (int idx){
     return RAT_vector[idx].valid;
 }
-
-void RAT::reset() {
-    for (int i = 0; i < RAT_vector.size(); i++) {
-        RAT_vector[i].valid = true;
-        RAT_vector[i].ROBId = -1;
-    }
-}

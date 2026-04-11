@@ -8,6 +8,7 @@ Processor::Processor(ProcessorConfig& config) :myROB(config.rob_size), myRAT(con
     // Instantiate Hardware Units
     ARF.resize(config.num_regs, 0);
     Memory.resize(config.mem_size, 0);
+    Parser myparser = Parser();
 
     // Keeping unit ordering stable for consistent index assumptions elsewhere:
     // ADDER, MULTIPLIER, DIVIDER, BRANCH, LOADSTORE, LOGIC
@@ -25,17 +26,7 @@ void Processor::loadProgram(const std::string& filename) {
     myparser.parseFile(file, Processor::inst_memory, Processor::Memory);
 }
 
-void Processor::flush() {
-    F_reg = Pipeline_reg{};
-    D_reg = Pipeline_reg{};
-
-    myROB.reset();
-    myRAT.reset();
-
-    for (int i = 0; i < units.size(); i++) {
-        units[i].reset();
-    }
-}
+void Processor::flush() {};
 
 void Processor::broadcastOnCDB( std::vector<std::pair<int,int>> b_vec){
     //each ROB entry should , each Execution Unit should 
@@ -64,12 +55,10 @@ void Processor::stageFetch() {
         std::cout<<pc<<"PC has exceeded instruction memory. "<<inst_memory.size()<< " No more instructions to fetch.\n";
         return;
     }
-    int current_pc = pc;
-    F_reg.inst = inst_memory[current_pc]; 
-    F_reg.bp_info = bp.make_prediction_info(current_pc, F_reg.inst.imm, F_reg.inst.op);
-    std::cout<<"pc: "<<current_pc<<" fetched instruction with opcode "<<static_cast<int>(F_reg.inst.op)<<"\n";
+    F_reg.inst = inst_memory[pc];
+    std::cout<<"pc: "<<pc<<" fetched instruction with opcode "<<static_cast<int>(F_reg.inst.op)<<"\n";
     F_reg.valid = true;
-    pc = F_reg.bp_info.predicted_next_pc; // complete takeover by bp, pc+=1 bhi isme hi hai, tbf early on bhi conditional daal sakte but works for now.
+    pc += 1;
 }
 
 void Processor::stageDecode() {
@@ -81,7 +70,6 @@ void Processor::stageDecode() {
         return;
     }
     D_reg.inst = F_reg.inst;
-    D_reg.bp_info = F_reg.bp_info;
     F_reg.valid = false; // remains false until next fetch.
     D_reg.valid = true;
     OpCode op = D_reg.inst.op;
@@ -102,42 +90,32 @@ void Processor::stageDecode() {
     else{
         std::cout<<"Pushing instruction to ROB and RS for execution unit "<<uId<<"\n";
         myROB.push(D_reg.inst);
-        int rob_tag = myROB.newest_entry_idx();
-        myROB.set_branch_prediction(rob_tag, D_reg.bp_info);
         RSEntry temp_rs_entry;
-        temp_rs_entry.ROB_Entry = rob_tag;
+        temp_rs_entry.ROB_Entry = myROB.newest_entry_idx();
         temp_rs_entry.op = D_reg.inst.op;
-
-        if (D_reg.inst.src1 < 0) temp_rs_entry.src1_valid = true;
-        else temp_rs_entry.src1_valid = myRAT.reg_valid(D_reg.inst.src1);
-
-        if (D_reg.inst.src2 < 0) temp_rs_entry.src2_valid = true;
-        else temp_rs_entry.src2_valid = myRAT.reg_valid(D_reg.inst.src2);
-
+        temp_rs_entry.src1_valid = myRAT.reg_valid(D_reg.inst.src1);
+        temp_rs_entry.src2_valid = myRAT.reg_valid(D_reg.inst.src2);
         if(temp_rs_entry.src1_valid && temp_rs_entry.src2_valid){
-            if (D_reg.inst.src1 >= 0) temp_rs_entry.src1_value=ARF[D_reg.inst.src1];
-            if (D_reg.inst.src2 >= 0) temp_rs_entry.src2_value=ARF[D_reg.inst.src2];
+            temp_rs_entry.src1_value=ARF[D_reg.inst.src1];
+            temp_rs_entry.src2_value=ARF[D_reg.inst.src2];
         }
         else if (temp_rs_entry.src1_valid){
-            if (D_reg.inst.src1 >= 0) temp_rs_entry.src1_value=ARF[D_reg.inst.src1];
-            if (D_reg.inst.src2 >= 0) temp_rs_entry.src2_tag=myRAT.get_alias(D_reg.inst.src2);
+            temp_rs_entry.src1_value=ARF[D_reg.inst.src1];
+            temp_rs_entry.src2_tag=myRAT.get_alias(D_reg.inst.src2);
         }
         else if (temp_rs_entry.src2_valid){
-            if (D_reg.inst.src2 >= 0) temp_rs_entry.src2_value=ARF[D_reg.inst.src2];
-            if (D_reg.inst.src1 >= 0) temp_rs_entry.src1_tag=myRAT.get_alias(D_reg.inst.src1);
+            temp_rs_entry.src2_value=ARF[D_reg.inst.src2];
+            temp_rs_entry.src1_tag=myRAT.get_alias(D_reg.inst.src1);
         }
         else{
-            if (D_reg.inst.src1 >= 0) temp_rs_entry.src1_tag=myRAT.get_alias(D_reg.inst.src1);
-            if (D_reg.inst.src2 >= 0) temp_rs_entry.src2_tag=myRAT.get_alias(D_reg.inst.src2);
+            temp_rs_entry.src1_tag=myRAT.get_alias(D_reg.inst.src1);
+            temp_rs_entry.src2_tag=myRAT.get_alias(D_reg.inst.src2);
         }
-
         std::cout<<"RS entry details: src1_valid "<<temp_rs_entry.src1_valid<<" src1_value "<<temp_rs_entry.src1_value<<" src1_tag "<<temp_rs_entry.src1_tag<<"\n";
         std::cout<<"RS entry details: src2_valid "<<temp_rs_entry.src2_valid<<" src2_value "<<temp_rs_entry.src2_value<<" src2_tag "<<temp_rs_entry.src2_tag<<"\n";
         temp_rs_entry.imm_value = D_reg.inst.imm;
         temp_rs_entry.dest_value = D_reg.inst.dest;
-        if (D_reg.inst.dest > 0) {
-            myRAT.add_to_RAT(D_reg.inst.dest, temp_rs_entry.ROB_Entry);
-        }
+        myRAT.add_to_RAT(D_reg.inst.dest, temp_rs_entry.ROB_Entry); 
         //push to appropriate reservation station too.
         std::cout<<"Pushing to RS of execution unit "<<uId<<" with ROB tag "<<temp_rs_entry.ROB_Entry<<"\n";
         units[uId].pushToRS(temp_rs_entry);
@@ -165,44 +143,20 @@ void Processor::stageExecuteAndBroadcast() {
 }
 
 void Processor::stageCommit() {
-    if (myROB.is_Empty()) {
-        std::cout<<"Cannot commit yet. ROB is empty \n";
-        return;
-    }
-    int oldest_tag = myROB.oldest_idx();
     ROBEntry entry = myROB.to_be_commited_entry(); //Returns oldest entry.
-    BP_info pred_info = myROB.to_be_commited_prediction();
     std::cout<<"Trying to commit ROB entry with dest reg "<<entry.dest_regId<<" and value "<<entry.dest_regVal<<"\n";
     int idx = entry.dest_regId;
-
-    if (pred_info.valid && pred_info.is_conditional) { // check for flush etc only for conditional branches.
-        int actual_next_pc = pred_info.fallthrough_pc;
-        bool taken = (entry.dest_regVal != 0);
-        if (taken) actual_next_pc = pred_info.target_pc;
-        else actual_next_pc = pred_info.fallthrough_pc;
-        bool was_correct = (actual_next_pc == pred_info.predicted_next_pc);
-        bp.update(pred_info.fetch_pc, taken, was_correct);
-
-        if (actual_next_pc != pred_info.predicted_next_pc) {
-            std::cout<<"Branch misprediction at PC "<<pred_info.fetch_pc<<". Flushing younger instructions.\n";
-            pc = actual_next_pc;
-            flush();
-            flushed_this_cycle = true;
-            return;
-        }
+    if(myROB.pop()){
+        if (idx>=0) ARF[idx] = entry.dest_regVal; // Prevent initial crash because of -1 access etcetera.
+        myRAT.rem_from_RAT(idx); // was crashing from out of bound access.
+        std::cout<<"Committed ROB entry with dest reg "<<idx<<" and value "<<entry.dest_regVal<<"\n";
     }
-
-    if (idx > 0) {
-        ARF[idx] = entry.dest_regVal; // Prevent initial crash because of -1 access etcetera.
-        if (myRAT.get_alias(idx) == oldest_tag) {
-            myRAT.rem_from_RAT(idx); // was crashing from out of bound access.
-        }
+    else{
+        std::cout<<"Cannot commit yet. Either ROB is empty or the oldest entry is not ready.\n";
     }
-    std::cout<<"Committed ROB entry with dest reg "<<idx<<" and value "<<entry.dest_regVal<<"\n";
 };
     
 bool Processor::step() {
-    flushed_this_cycle = false;
     if (exception) {
         flush();
         return false;
@@ -216,10 +170,6 @@ bool Processor::step() {
     // }
     std::cout<<"pc: "<<pc<<" clock cycle: "<<clock_cycle<<"\n";
     stageCommit();
-    if (flushed_this_cycle) {
-        clock_cycle++;
-        return true;
-    }
     stageExecuteAndBroadcast();
     stageDecode();
     stageFetch();

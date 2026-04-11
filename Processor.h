@@ -15,7 +15,6 @@
 
 struct Pipeline_reg{
     Instruction inst;
-    BP_info bp_info;
     bool valid = false; // to control the 1st inst.
 };
 
@@ -24,7 +23,6 @@ private:
 public:
     int pc;
     int clock_cycle;
-    bool flushed_this_cycle = false;
 
     // pipeline registers
     Pipeline_reg F_reg;

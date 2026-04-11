@@ -40,7 +40,6 @@ class RS {
     virtual int get_valid_entry(); //method to iterate linearly and find the ready entry: optional result? returns index of ready entry. -1 if none yet.
 
     int update_rs(); // update_rs(), returns index.
-    virtual void reset();
 
     void invalidate_entry(int idx);
 

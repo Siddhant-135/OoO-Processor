@@ -3,27 +3,22 @@
 #include <iostream>
 #include <vector>
 
-struct BP_info {
-    bool valid = false;
-    bool is_conditional = false;
-    bool is_jump = false;
-    int fetch_pc = -1;
-    int target_pc = -1;
-    int fallthrough_pc = -1;
-    int predicted_next_pc = -1;
-};
-
 class BranchPredictor {
-private:
-    void expand_if_required(int pc) ;
-    bool is_conditional_branch(OpCode op) ;
-
 public:
     int total_branches = 0;
     int correct_predictions = 0;
-    std::vector<int> state_table; // 2-bit state: State 0- Strong taken. State 1- Weak taken. State 2- Weak not taken. State 3- Strong not taken.
+    int state = 0; // 2-bit state: State 0- Strong taken. State 1- Weak taken. State 2- Weak not taken. State 3- Strong not taken.
 
-    int predict(int current_pc, int target_pc, OpCode op);
-    BP_info make_prediction_info(int current_pc, int target_pc, OpCode op);
-    void update(int pc, bool taken, bool was_correct);
-    };
+    int predict(int current_pc, int imm, OpCode op) 
+    {
+        if(state==0 || state==1) return current_pc + imm; 
+        else return current_pc + 1; 
+    }
+
+    void update(int pc, int actual_target, bool taken, bool was_correct) {
+        total_branches++;
+        if(was_correct) correct_predictions++;
+        if(taken) state = std::max(0, state - 1); 
+        else state = std::min(3, state + 1); 
+    }
+};
