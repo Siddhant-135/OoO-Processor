@@ -23,6 +23,8 @@ class ROB {
     // ONLY THINGS THAT EVOLVE SIZE VARIABLE ->
     void push(Instruction inst);
     bool pop(); // does it pop or not uske liye
+    bool get_ReadyFromRS(int idx){return ROB_Vector[idx].ready_from_RS;}
+    int get_DestRegVal(int idx){return ROB_Vector[idx].dest_regVal;}
 
     ROB(int size){//constructor
         ROB_Vector.resize(size);

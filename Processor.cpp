@@ -101,15 +101,35 @@ void Processor::stageDecode() {
         }
         else if (temp_rs_entry.src1_valid){
             temp_rs_entry.src1_value=ARF[D_reg.inst.src1];
-            temp_rs_entry.src2_tag=myRAT.get_alias(D_reg.inst.src2);
+            temp_rs_entry.src2_tag=myRAT.get_alias(D_reg.inst.src2);// Let there be a tag as well as a value: ready from RS is true then take the value and make src1 valid.
+            if(myROB.get_ReadyFromRS(temp_rs_entry.src2_tag)){
+                temp_rs_entry.src2_value=myROB.get_DestRegVal(temp_rs_entry.src2_tag);
+                temp_rs_entry.src2_valid=true;
+                temp_rs_entry.src2_tag=-1;
+            }
         }
         else if (temp_rs_entry.src2_valid){
             temp_rs_entry.src2_value=ARF[D_reg.inst.src2];
             temp_rs_entry.src1_tag=myRAT.get_alias(D_reg.inst.src1);
+            if(myROB.get_ReadyFromRS(temp_rs_entry.src1_tag)){
+                temp_rs_entry.src1_value=myROB.get_DestRegVal(temp_rs_entry.src1_tag);
+                temp_rs_entry.src1_valid=true;
+                temp_rs_entry.src1_tag=-1;
+            }
         }
         else{
             temp_rs_entry.src1_tag=myRAT.get_alias(D_reg.inst.src1);
+            if(myROB.get_ReadyFromRS(temp_rs_entry.src1_tag)){
+                temp_rs_entry.src1_value=myROB.get_DestRegVal(temp_rs_entry.src1_tag);
+                temp_rs_entry.src1_valid=true;
+                temp_rs_entry.src1_tag=-1;
+            }
             temp_rs_entry.src2_tag=myRAT.get_alias(D_reg.inst.src2);
+            if(myROB.get_ReadyFromRS(temp_rs_entry.src2_tag)){
+                temp_rs_entry.src2_value=myROB.get_DestRegVal(temp_rs_entry.src2_tag);
+                temp_rs_entry.src2_valid=true;
+                temp_rs_entry.src2_tag=-1;
+            }
         }
         std::cout<<"RS entry details: src1_valid "<<temp_rs_entry.src1_valid<<" src1_value "<<temp_rs_entry.src1_value<<" src1_tag "<<temp_rs_entry.src1_tag<<"\n";
         std::cout<<"RS entry details: src2_valid "<<temp_rs_entry.src2_valid<<" src2_value "<<temp_rs_entry.src2_value<<" src2_tag "<<temp_rs_entry.src2_tag<<"\n";
