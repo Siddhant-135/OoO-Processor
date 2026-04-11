@@ -1,6 +1,7 @@
 #pragma once
 #include "Basics.h"
 #include <vector>
+#include <iostream>
 
 struct RATEntry{
     //default mapping: validity true, hence Rob column -1

@@ -39,7 +39,7 @@ struct ROBEntry {
     bool valid = false;
     bool ready_from_RS= false; //always ready to go to RS. This is instead bool for "has it received a value from RS" 
     int dest_regId = -1; 
-    int dest_regVal = -1; //just store the dest_regVal. What about memory? NOT IN ROB
+    int dest_regVal = 0; //just store the dest_regVal. What about memory? NOT IN ROB
 };
 
 struct RSEntry {

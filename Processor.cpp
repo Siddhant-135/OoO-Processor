@@ -70,6 +70,7 @@ void Processor::stageFetch() {
     std::cout<<"pc: "<<current_pc<<" fetched instruction with opcode "<<static_cast<int>(F_reg.inst.op)<<"\n"; //HOW TO MAKE THE OPCODE STRING
     F_reg.valid = true;
     pc = F_reg.bp_info.predicted_next_pc; // complete takeover by bp, pc+=1 bhi isme hi hai, tbf early on bhi conditional daal sakte but works for now.
+    std::cout<<"Branch Predictor predicted next pc to be "<<F_reg.bp_info.predicted_next_pc<<"\n";
 }
 
 void Processor::stageDecode() {
@@ -102,13 +103,14 @@ void Processor::stageDecode() {
     else{
         std::cout<<"Pushing instruction to ROB and RS for execution unit "<<uId<<"\n";
         myROB.push(D_reg.inst);
+        // Make the D_reg.inst.destRegId as false too!! happens in My_RAT.add_to RAT.
         int rob_tag = myROB.newest_entry_idx();
         myROB.set_branch_prediction(rob_tag, D_reg.bp_info);
         RSEntry temp_rs_entry;
         temp_rs_entry.ROB_Entry = rob_tag;
         temp_rs_entry.op = D_reg.inst.op;
 
-        if (D_reg.inst.src1 < 0) temp_rs_entry.src1_valid = true;
+        if (D_reg.inst.src1 < 0) temp_rs_entry.src1_valid = true; // is this causing error for the BEQ case? Should not be so
         else temp_rs_entry.src1_valid = myRAT.reg_valid(D_reg.inst.src1);
 
         if (D_reg.inst.src2 < 0) temp_rs_entry.src2_valid = true;
@@ -190,16 +192,17 @@ void Processor::stageCommit() {
         return;
     }
     int oldest_tag = myROB.oldest_idx();
-    ROBEntry entry = myROB.to_be_commited_entry(); //Returns oldest entry.
-    BP_info pred_info = myROB.to_be_commited_prediction();
+    ROBEntry entry = myROB.to_be_commited_entry(); //Returns oldest entry., and the ready one. In BP context it is the real entry.
+    BP_info pred_info = myROB.to_be_commited_prediction(); // The prediction by the Branch Predictor. If the entry isnt a branch, the validity bit of this is zero.
     std::cout<<"Trying to commit ROB entry with dest reg "<<entry.dest_regId<<" and value "<<entry.dest_regVal<<"\n";
-    int idx = entry.dest_regId;
+    int idx = entry.dest_regId; // -1 for lot of commands, such as SW, Branches etc.
 
+    if(entry.ready_from_RS){
     if (pred_info.valid && pred_info.is_conditional) { // check for flush etc only for conditional branches.
         int actual_next_pc = pred_info.fallthrough_pc;
-        bool taken = (entry.dest_regVal != 0);
+        bool taken = (entry.dest_regVal != 0); // branch fails if the int version of the boolean operation is 0, taken if NOT.
         if (taken) actual_next_pc = pred_info.target_pc;
-        else actual_next_pc = pred_info.fallthrough_pc;
+        else actual_next_pc = pred_info.fallthrough_pc; //repetitive, but we learn by repetition
         bool was_correct = (actual_next_pc == pred_info.predicted_next_pc);
         bp.update(pred_info.fetch_pc, taken, was_correct);
 
@@ -210,16 +213,22 @@ void Processor::stageCommit() {
             flushed_this_cycle = true;
             return;
         }
+        else{
+            std::cout<<"Branch prediction correct for branch at PC "<<pred_info.fetch_pc<<".\n";
+        }
     }
 
     if(myROB.pop()){
-        if (idx>=0) ARF[idx] = entry.dest_regVal; // Prevent initial crash because of -1 access etcetera.
+        if (idx>=0) {ARF[idx] = entry.dest_regVal; // Prevent initial crash because of -1 access in SW, BRANCHES.
         myRAT.rem_from_RAT(idx); // was crashing from out of bound access.
         std::cout<<"Committed ROB entry with dest reg "<<idx<<" and value "<<entry.dest_regVal<<"\n";
-
+        }
+        else{
+            std::cout<<"Committed ROB entry with no register destination, prolly did for SW or branch and value "<<entry.dest_regVal<<"\n";
+        }
     }
 
-    if (idx > 0) {
+    if (idx > 0) { // IDX is just the dest reg id though, It says nothing about the readiness of the value.
         ARF[idx] = entry.dest_regVal; // Prevent initial crash because of -1 access etcetera.
         if (myRAT.get_alias(idx) == oldest_tag) {
             myRAT.rem_from_RAT(idx); // was crashing from out of bound access.
@@ -227,7 +236,10 @@ void Processor::stageCommit() {
         }
     }
     else{
-        std::cout<<"Cannot commit yet. Either ROB is empty or the oldest entry is not ready.\n";}
+        std::cout<<"Committed ROB entry with no register destination, prolly did for SW or branch and value "<<entry.dest_regVal<<"\n";
+    }}
+    else{
+        std::cout<<"Cannot commit yet. The oldest value isn't ready.\n";}
 };
     
 bool Processor::step() {
