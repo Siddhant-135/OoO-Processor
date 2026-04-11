@@ -1,5 +1,5 @@
 #include "Basics.h"
-
+#include "BranchPredictor.h"
 
 void BranchPredictor::expand_if_required(int pc) {
     if (pc < 0) return;
