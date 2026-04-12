@@ -141,7 +141,7 @@ else{
     if(myRS->PipelineCounter<latency){//see fix, divide latency by stages per instruction.
         loadToPipeline();
         }
-    return std::make_pair(-1,-1);
+    return result;
 }
 }
 

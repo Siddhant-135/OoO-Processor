@@ -23,7 +23,7 @@ class ROB {
     int oldest_idx(){return oldest_entry_idx;}
     void set_branch_prediction(int idx, const BP_info& info){ ROB_branch_prediction[idx] = info; }
     BP_info get_branch_prediction(int idx){ return ROB_branch_prediction[idx]; }
-    void rob_capture_results(std::vector <std::pair<int, int>> tags_values);//get the broadcasted result from the RS here. Assuming that for now only one entry from the RS gets valid
+    void rob_capture_results(std::vector <ExuResult> tags_values);//get the broadcasted result from the RS here. Assuming that for now only one entry from the RS gets valid
     bool is_Full() { return (number_of_entries==capacity); } // 
     bool is_Empty() { return (number_of_entries==0); } // starts with this. then youngest = oldest + 1, then +2, etc.
     // ONLY THINGS THAT EVOLVE SIZE VARIABLE ->
