@@ -21,6 +21,9 @@ struct Pipeline_reg{
 
 class Processor {
 private:
+    // Snapshot before execute each cycle: issue (decode) must not see RS slots
+    // freed by completions in the same cycle as decode runs after execute in step().
+    std::vector<bool> rs_full_before_execute;
 public:
     int pc;
     int clock_cycle;

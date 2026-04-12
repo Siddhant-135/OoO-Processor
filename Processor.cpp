@@ -17,6 +17,7 @@ Processor::Processor(ProcessorConfig& config) :myROB(config.rob_size), myRAT(con
     units.push_back(ExecutionUnit(UnitType::BRANCH, config.add_lat, config.br_rs_size, Memory));
     units.push_back(ExecutionUnit(UnitType::LOADSTORE, config.mem_lat, config.lsq_rs_size, Memory));
     units.push_back(ExecutionUnit(UnitType::LOGIC, config.logic_lat, config.logic_rs_size, Memory));
+    rs_full_before_execute.resize(units.size(), false);
 }
 
 void Processor::loadProgram(const std::string& filename) {
@@ -113,7 +114,7 @@ void Processor::stageDecode() {
     // THE ELSE PART, I.E A STILL-VALID D_REG, MEANING A DECODE IN ITS STALL STATE. ALSO HAS TO EECUTE FOR A NEWLY ENCOUNTERED DECODE SO CHILL
     //cases acc to which instruction it is. But call step to all exe units regardless.
     int uId = getUnitIdx(D_reg.inst.op);
-    if(myROB.is_Full() || units[uId].isRSFull()){ //incorporates LSQ full too.
+    if(myROB.is_Full() || rs_full_before_execute[static_cast<size_t>(uId)]){ // RS fullness from before execute (same cycle).
         //stall
         if(myROB.is_Full()) std::cout<<"Stalling at decode stage due to full ROB.\n";
         else std::cout<<"Stalling at decode stage due to full RS of execution unit "<<uId<<".\n";
@@ -296,12 +297,15 @@ bool Processor::step() {
     std::cout<<"\n--- CYCLE "<<clock_cycle<<" (PC: "<<pc<<") ---\n";
     stageCommit();
     if (exception) {
-        clock_cycle += 2;
+        clock_cycle += 1;
         return false;
     }
     if (flushed_this_cycle) {
         clock_cycle++;
         return true;
+    }
+    for (size_t i = 0; i < units.size(); i++) {
+        rs_full_before_execute[i] = units[i].isRSFull();
     }
     stageExecuteAndBroadcast();
     stageDecode();
