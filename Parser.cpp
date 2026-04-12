@@ -142,7 +142,7 @@ void Parser::parseFile(std::ifstream& file, std::vector<Instruction>& inst_memor
             int val;
             while (iss >> val)
             {
-                memory.push_back(val);
+                memory[mem_location] = val;
                 mem_location++;
             }
             continue;

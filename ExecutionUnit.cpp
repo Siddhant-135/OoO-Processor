@@ -122,15 +122,15 @@ if(idx!=-1){
         else if(op == OpCode::XOR)
         output = (src1 ^ src2);
         else if(op == OpCode::ANDI)
-        output = (src1 & src2);
+        output = (src1 & imm);
         else if(op == OpCode::ORI)
-        output = (src1 | src2);
+        output = (src1 | imm);
         else if(op == OpCode::XORI)
-        output = (src1 ^ src2);
+        output = (src1 ^ imm);
         else if(op == OpCode::SLT)
         output = int (src1 < src2);
         else if(op == OpCode::SLTI)
-        output = int (src1 < src2);
+        output = int (src1 < imm);
     }
     result.tag = tag;
     result.value = output;

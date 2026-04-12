@@ -11,6 +11,8 @@ void ROB::push(Instruction inst){
         ROB_Vector[youngest_entry_idx].dest_regId = inst.dest;//lw, sw are not included in this. 
         ROB_Vector[youngest_entry_idx].dest_regVal = -1;//will be updated upon .
         ROB_branch_prediction[youngest_entry_idx] = BP_info{};
+        ROB_Vector[youngest_entry_idx].dest_memAddr = -1;
+        ROB_Vector[youngest_entry_idx].dest_memVal = 0;
         number_of_entries++;
     }
 }
@@ -48,6 +50,8 @@ void ROB::reset() {
         ROB_Vector[i].dest_regId = -1;
         ROB_Vector[i].dest_regVal = 0;
         ROB_branch_prediction[i] = BP_info{};
+        ROB_Vector[i].dest_memAddr = -1;
+        ROB_Vector[i].dest_memVal = 0;
     }
     number_of_entries = 0;
     oldest_entry_idx = 1;
