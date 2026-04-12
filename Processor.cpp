@@ -99,6 +99,15 @@ void Processor::stageDecode() {
             std::cout<<"Unsupported opcode encountered during decode. Halting.\n";
             return;
         }
+
+        // J (unconditional jump) is fully resolved at fetch — BP already set pc = target.
+        // No register write, no memory effect, no need for ROB/RS/execute/commit.
+        // Just consume it and free the decode register.
+        if (D_reg.inst.op == OpCode::J) {
+            std::cout<<"Jump instruction resolved at fetch. Consuming at decode, no ROB/RS needed.\n";
+            D_reg.valid = false;
+            return;
+        }
     }
 
     // THE ELSE PART, I.E A STILL-VALID D_REG, MEANING A DECODE IN ITS STALL STATE. ALSO HAS TO EECUTE FOR A NEWLY ENCOUNTERED DECODE SO CHILL
