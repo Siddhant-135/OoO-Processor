@@ -71,20 +71,29 @@ if(idx!=-1){
     int output = 0;
     
     // OpCode is the operation, UnitType is the hardware doing the operation.
-    if(name== UnitType::ADDER){//ADD, SUB, ADDI, 
+    if(name== UnitType::ADDER){//ADD, SUB, ADDI, // TO ADD: SLTI and SLT in ADDER
         if(op == OpCode::ADD)
         temp_output = add(src1, src2);
         else if(op == OpCode::SUB)
         temp_output = add(src1, -src2);
-        else //(ADDI)
+        else if(op == OpCode::ADDI)
         temp_output = add(src1, imm);
+        else if(op == OpCode::SLTI)
+        temp_output = add(src1, -imm);
+        else if(op == OpCode::SLT)
+        temp_output = add(src1, -src2);
 
         if(!check_output_bound(temp_output)) {
             result.has_exception = true;
             output = 0;
             std::cout << "    Adder overflow for ROB tag " << tag << "\n";
         } 
-        else {output = static_cast<int>(temp_output);}
+        else {
+            if (op == OpCode::SLTI || op == OpCode::SLT)
+            output = int(temp_output < 0);
+            else
+            output = static_cast<int>(temp_output);
+        }
     }
     
     else if(name==UnitType::MULTIPLIER){//MUL
