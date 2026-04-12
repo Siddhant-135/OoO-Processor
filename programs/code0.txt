@@ -1,5 +1,5 @@
-addi x1, x0, 1
-j end
-addi x1, x1, 99
-end:
-addi x2, x0, 5
+addi x1, x0, 3
+addi x2, x0, 3
+ble x1, x2, done
+addi x4, x0, 7
+done:

@@ -67,7 +67,9 @@ void RS::reset() {
 }
 
 void RS::invalidate_entry(int idx){
+    if(idx == -1) return;
     RS_stage_vector[idx].valid=false;
+    RS_stage_vector[idx].stage=-1;
     return;
 }
 

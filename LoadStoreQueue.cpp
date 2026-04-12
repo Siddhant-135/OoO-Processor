@@ -35,3 +35,11 @@ void LoadStoreQueue::reset() {
     youngest_entry = 0;
     oldest_entry = 1;
 }
+
+void LoadStoreQueue::invalidate_entry(int idx){
+    // oldest_entry update too.
+    if(idx == -1) return;
+    oldest_entry = (oldest_entry+1)%size;
+    RS_stage_vector[idx].valid = false;
+    RS_stage_vector[idx].stage = -1;
+}

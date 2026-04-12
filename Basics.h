@@ -54,3 +54,10 @@ struct RSEntry {
     int ROB_Entry = -1;
     OpCode op = OpCode::ADD;
 };
+
+struct ExuResult{
+    int tag = -1;
+    int value = 0;
+    int mem_addr = -1; //for sw
+    int mem_val = 0; //for sw
+};

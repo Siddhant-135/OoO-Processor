@@ -37,14 +37,14 @@ void Processor::flush() {
     }
 }
 
-void Processor::broadcastOnCDB( std::vector<std::pair<int,int>> b_vec){
+void Processor::broadcastOnCDB( std::vector<ExuResult> b_vec){
     //each ROB entry should , each Execution Unit should 
     std::cout<<"In Broadcast\n";
     myROB.rob_capture_results(b_vec);
     for(int j=0; j<units.size(); j++)
     {
         for(int i =0; i<b_vec.size(); i++){
-            units[j].exu_capture (b_vec[i].first,b_vec[i].second);
+            units[j].exu_capture (b_vec[i].tag,b_vec[i].value); // units dont have to capture the result of a sw
         }
     }
 }
@@ -183,14 +183,14 @@ void Processor::stageDecode() {
 void Processor::stageExecuteAndBroadcast() {
     //all entries, if any are out. then they are written to the ROB and written to the RS by the broadcast.
     //it seems we do need a broadcast vector. Temporary one is made in every cycle.
-    std::pair<int,int> temp;
-    std::vector <std::pair<int,int>> broadcast_vector;
+    ExuResult temp;
+    std::vector <ExuResult> broadcast_vector;
     for(int i=0;i<units.size();i++){
         std::cout<<"Executing unit "<<i<<"\n";
         temp = units[i].executeCycle();
-        std::cout<<"    Execution result: tag "<<temp.first<<" value "<<temp.second<<"\n";
-        if(temp.first != -1){
-        std::cout<<"    Adding to broadcast vector: tag "<<temp.first<<" value "<<temp.second<<"\n";
+        std::cout<<"    Execution result: tag "<<temp.tag<<" value "<<temp.value<<"\n";
+        if(temp.tag != -1){
+        std::cout<<"    Adding to broadcast vector: tag "<<temp.tag<<" value "<<temp.value<<"\n";
         broadcast_vector.push_back(temp);
         // units[i].loadToPipeline(); // REDUNDANT & BUGGY: executeCycle() already handles capacity bounds
         }
@@ -245,7 +245,11 @@ void Processor::stageCommit() {
             std::cout<<"Committed ROB entry with dest reg "<<idx<<" and value "<<entry.dest_regVal<<"\n";
         }
         else{
-            std::cout<<"Committed ROB entry with no register destination (or x0) and value "<<entry.dest_regVal<<"\n";
+            if (entry.dest_memAddr != -1) {
+                Memory[entry.dest_memAddr] = entry.dest_memVal;
+                std::cout<<"Committed SW instruction at address "<<entry.dest_memAddr<<" with value "<<entry.dest_memVal<<"\n";
+            }
+            else std::cout<<"Removed from ROB the entry trying to commit to x0 and value: "<<entry.dest_regVal<<"\n";
         }
     }
     // REDUNDANT/BUGGY LOGIC REMOVED FROM HERE

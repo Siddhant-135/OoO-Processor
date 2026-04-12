@@ -53,11 +53,12 @@ UnitType ExecutionUnit::getUnitTypeForOp(OpCode op) {
 //doesnt push anything yet.
 // also broadcast via the return.
 
-std::pair<int, int> ExecutionUnit::executeCycle(){ //arguments: none, return int: ROB tag, val: the result of the calculation. 
+ExuResult ExecutionUnit::executeCycle(){ //arguments: none, return int: ROB tag, val: the result of the calculation. 
 int idx = myRS->update_rs(); //returns index of the entry that has completed the pipeline.
+ExuResult result;
 if(idx!=-1){
     const RSEntry& rs_entry = myRS->get_entry(idx);
-    int src1 = rs_entry.src1_value;
+    int src1 = rs_entry.src1_value; 
     int src2 = rs_entry.src2_value;
     int imm = rs_entry.imm_value; 
     int dest = rs_entry.dest_value;
@@ -100,8 +101,11 @@ if(idx!=-1){
         if(op == OpCode::LW)
         output = memory[src1 + imm]; 
         else if(op == OpCode::SW){
-            memory[src2 + imm] = src1; // the real execution.
-            output = memory[src2 + imm]; // a formality. No instruction has an ROB tag corresponding to a store.
+            // memory[src2 + imm] = src1; // the real execution will happen in commit.
+            result.mem_addr = src2 + imm;
+            result.mem_val = src1;
+            // No instruction has an ROB tag corresponding to a store since RAT never updates on sw, so no output needed
+            // so the tag based check will happen for this instruction's ROB too: benign
         }       
     }
     else{//(name == UnitType::LOGIC)  SLT, SLTI, AND, OR, XOR, ANDI, ORI, XORI  IMMEDIATE HANDLING IS AGAIN NECESSARY.
@@ -122,16 +126,18 @@ if(idx!=-1){
         else if(op == OpCode::SLTI)
         output = int (src1 < src2);
     }
-    myRS->invalidate_entry(idx);
+    result.tag = tag;
+    result.value = output;
+    myRS->invalidate_entry(idx); 
     myRS->PipelineCounter--;
     std::cout<<"Im here!\n";
     if(myRS->PipelineCounter<latency){//see fix, divide latency by stages per instruction.
         loadToPipeline();
     }
-    return std::make_pair(tag, output); 
+    return result; 
 }
 else{
-    std::cout<<"Im there!\n";
+    std::cout<<"Im there, nothing ready out of pipeline yet!\n";
     if(myRS->PipelineCounter<latency){//see fix, divide latency by stages per instruction.
         loadToPipeline();
         }

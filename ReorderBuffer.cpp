@@ -29,12 +29,14 @@ bool ROB::pop(){
 }
 
 //at every cycle
-void ROB::rob_capture_results(std::vector <std::pair<int, int>> tags_values){
+void ROB::rob_capture_results(std::vector <ExuResult> tags_values){
 
     for(int i=0;i<tags_values.size();i++){
-        ROB_Vector[tags_values[i].first].dest_regVal = tags_values[i].second;
-        ROB_Vector[tags_values[i].first].ready_from_RS = true;
-        std::cout<<"ROB capture: Updated ROB entry with tag "<<tags_values[i].first<<" to value "<<tags_values[i].second<<"\n";
+        ROB_Vector[tags_values[i].tag].dest_regVal = tags_values[i].value;
+        ROB_Vector[tags_values[i].tag].ready_from_RS = true;
+        ROB_Vector[tags_values[i].tag].dest_memAddr = tags_values[i].mem_addr;
+        ROB_Vector[tags_values[i].tag].dest_memVal = tags_values[i].mem_val;
+        std::cout<<"ROB capture: Updated ROB entry with tag "<<tags_values[i].tag<<" to value "<<tags_values[i].value<<"and mem addr "<<tags_values[i].mem_addr<<"and mem val "<<tags_values[i].mem_val<<"\n";
     }
     return;
 }
