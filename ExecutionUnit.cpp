@@ -80,7 +80,12 @@ if(idx!=-1){
         output = mul(src1, src2);
     }
     else if(name==UnitType::DIVIDER){//DIV, REM
-        if(op == OpCode::DIV)
+        if(src2 == 0){
+            result.has_exception = true;
+            output = 0;
+            std::cout << "    Divider exception: divide/remainder by zero for ROB tag " << tag << "\n";
+        }
+        else if(op == OpCode::DIV)
         output = div(src1, src2);
         else if(op == OpCode::REM)
         output = (src1 % src2);
@@ -98,18 +103,33 @@ if(idx!=-1){
         output = imm; 
     }
     else if(name == UnitType::LOADSTORE){//LW, SW  forwarding needs to be added in get ready entry.
+        int mem_addr = (op == OpCode::LW) ? (src1 + imm) : (src2 + imm);
+        bool out_of_bounds = (mem_addr < 0 || mem_addr >= static_cast<int>(memory.size()));
         if(op == OpCode::LW){
-            if(rs_entry.ls_fwded){//can also change to mem_valid but okay.
+            if(out_of_bounds){
+                result.has_exception = true;
+                output = 0;
+                std::cout << "    Memory exception: LW address out of bounds (" << mem_addr
+                          << ") for ROB tag " << tag << "\n";
+            }
+            else if(rs_entry.ls_fwded){//can also change to mem_valid but okay.
                 output = rs_entry.mem_val;
             }
             else{
-                output = memory[src1 + imm]; 
+                output = memory[mem_addr];
             }
         }
         else if(op == OpCode::SW){
-            // memory[src2 + imm] = src1; // the real execution will happen in commit.
-            result.mem_addr = src2 + imm;
-            result.mem_val = src1;
+            if(out_of_bounds){
+                result.has_exception = true;
+                result.mem_addr = -1;
+                result.mem_val = 0;
+                std::cout << "    Memory exception: SW address out of bounds (" << mem_addr
+                          << ") for ROB tag " << tag << "\n";
+            } else {
+                result.mem_addr = mem_addr;
+                result.mem_val = src1;
+            }
             // No instruction has an ROB tag corresponding to a store since RAT never updates on sw, so no output needed
             // so the tag based check will happen for this instruction's ROB too: benign
         }       

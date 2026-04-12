@@ -42,6 +42,8 @@ struct ROBEntry {
     int dest_regVal = 0; //just store the dest_regVal. What about memory? NOT IN ROB
     int dest_memAddr = -1; // NEW FIELD AS OLD ONE WAS FOR REG ADDRESS. INTRODUCED FOR SW OPERTING AT COMMIT STAGE
     int dest_memVal = 0; // INTRODUCED FOR SW OPERTING AT COMMIT STAGE
+    int inst_pc = -1;
+    bool has_exception = false;
 };
 
 struct RSEntry {
@@ -65,4 +67,5 @@ struct ExuResult{
     int value = 0;
     int mem_addr = -1; //for sw
     int mem_val = 0; //for sw
+    bool has_exception = false;
 };

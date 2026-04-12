@@ -13,6 +13,8 @@ void ROB::push(Instruction inst){
         ROB_branch_prediction[youngest_entry_idx] = BP_info{};
         ROB_Vector[youngest_entry_idx].dest_memAddr = -1;
         ROB_Vector[youngest_entry_idx].dest_memVal = 0;
+        ROB_Vector[youngest_entry_idx].inst_pc = inst.pc;
+        ROB_Vector[youngest_entry_idx].has_exception = false;
         number_of_entries++;
     }
 }
@@ -38,6 +40,7 @@ void ROB::rob_capture_results(std::vector <ExuResult> tags_values){
         ROB_Vector[tags_values[i].tag].ready_from_RS = true;
         ROB_Vector[tags_values[i].tag].dest_memAddr = tags_values[i].mem_addr;
         ROB_Vector[tags_values[i].tag].dest_memVal = tags_values[i].mem_val;
+        ROB_Vector[tags_values[i].tag].has_exception = tags_values[i].has_exception;
         std::cout<<"ROB capture: Updated ROB entry with tag "<<tags_values[i].tag<<" to value "<<tags_values[i].value<<"and mem addr "<<tags_values[i].mem_addr<<"and mem val "<<tags_values[i].mem_val<<"\n";
     }
     return;
@@ -52,6 +55,8 @@ void ROB::reset() {
         ROB_branch_prediction[i] = BP_info{};
         ROB_Vector[i].dest_memAddr = -1;
         ROB_Vector[i].dest_memVal = 0;
+        ROB_Vector[i].inst_pc = -1;
+        ROB_Vector[i].has_exception = false;
     }
     number_of_entries = 0;
     oldest_entry_idx = 1;

@@ -213,6 +213,14 @@ void Processor::stageCommit() {
     int idx = entry.dest_regId; // -1 for lot of commands, such as SW, Branches etc.
 
     if(entry.ready_from_RS){
+    if (entry.has_exception) {
+        std::cout << "Exception at commit for ROB entry " << oldest_tag
+                  << " (instruction PC " << entry.inst_pc << "). Halting.\n";
+        pc = entry.inst_pc;
+        exception = true;
+        flush();
+        return;
+    }
     if (pred_info.valid && pred_info.is_conditional) { // check for flush etc only for conditional branches.
         int actual_next_pc = pred_info.fallthrough_pc;
         bool taken = (entry.dest_regVal != 0); // branch fails if the int version of the boolean operation is 0, taken if NOT.
@@ -262,7 +270,6 @@ void Processor::stageCommit() {
 bool Processor::step() {
     flushed_this_cycle = false;
     if (exception) {
-        flush();
         return false;
     }
     
@@ -278,6 +285,10 @@ bool Processor::step() {
 
     std::cout<<"\n--- CYCLE "<<clock_cycle<<" (PC: "<<pc<<") ---\n";
     stageCommit();
+    if (exception) {
+        clock_cycle += 2;
+        return false;
+    }
     if (flushed_this_cycle) {
         clock_cycle++;
         return true;
