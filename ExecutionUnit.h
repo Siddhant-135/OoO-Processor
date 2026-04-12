@@ -33,9 +33,9 @@ public:
     ExuResult executeCycle();
     void reset();
     //add operation function
-    int add(int src1, int src2){return src1+src2;} // Group-theretically correct implementaion.
-    int mul(int src1, int src2){return src1*src2;} 
-    int div(int src1, int src2){return src1/src2;} // truncated
+    long long add(int src1, int src2){return (long long)src1+(long long)src2;} // Group-theretically correct implementaion.
+    long long mul(int src1, int src2){return (long long)src1*(long long)src2;} 
+    long long div(int src1, int src2){return (long long)src1/(long long)src2;} // truncated
 
     bool isRSFull(){return myRS->isFull();}
     bool hasPendingWork() { return myRS->hasPendingWork(); }

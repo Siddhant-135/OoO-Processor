@@ -67,31 +67,34 @@ if(idx!=-1){
     int imm = rs_entry.imm_value; 
     int tag = rs_entry.ROB_Entry;
     OpCode op = rs_entry.op;
+    long long temp_output = 0;
     int output = 0;
     
     // OpCode is the operation, UnitType is the hardware doing the operation.
-    if(name== UnitType::ADDER){//ADD, SUB, ADDI
+    if(name== UnitType::ADDER){//ADD, SUB, ADDI, 
         if(op == OpCode::ADD)
-        output = add(src1, src2);
+        temp_output = add(src1, src2);
         else if(op == OpCode::SUB)
-        output = (src1 - src2);
+        temp_output = add(src1, -src2);
         else //(ADDI)
-        output = add(src1, imm);
+        temp_output = add(src1, imm);
 
-        if(!check_output_bound(output)) {
+        if(!check_output_bound(temp_output)) {
             result.has_exception = true;
             output = 0;
             std::cout << "    Adder overflow for ROB tag " << tag << "\n";
         } 
+        else {output = static_cast<int>(temp_output);}
     }
     
     else if(name==UnitType::MULTIPLIER){//MUL
-        output = mul(src1, src2);
+        temp_output = mul(src1, src2);
         if(!check_output_bound(temp_output)) {
             result.has_exception = true;
             output = 0;
             std::cout << "    Multiplier overflow for ROB tag " << tag << "\n";
         }
+        else {output = static_cast<int>(temp_output);}
     }
     else if(name==UnitType::DIVIDER){//DIV, REM
         if(src2 == 0){
@@ -100,9 +103,15 @@ if(idx!=-1){
             std::cout << "    Divider exception: divide/remainder by zero for ROB tag " << tag << "\n";
         }
         else if(op == OpCode::DIV)
-        output = div(src1, src2);
+        temp_output = div(src1, src2);
         else if(op == OpCode::REM)
-        output = (src1 % src2);
+        temp_output = (src1 % src2);
+        if(!check_output_bound(temp_output)) {
+            result.has_exception = true;
+            output = 0;
+            std::cout << "    Divider overflow for ROB tag " << tag << "\n";
+        }
+        else {output = static_cast<int>(temp_output);}
     }
     else if(name == UnitType::BRANCH){// BEQ, BNE, BLT, BLE, J
         if(op == OpCode::BEQ)
