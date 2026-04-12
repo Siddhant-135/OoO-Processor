@@ -14,16 +14,18 @@ void LoadStoreQueue::push(RSEntry temp){
 int LoadStoreQueue::get_valid_entry(){
     // go down from oldest to as long as stuff is valid
     int idx = -1;
-    for(int i = oldest_entry; i < (oldest_entry+pipeline_size)%size; (i=i+1)%size){
-        if(!RS_stage_vector[i].valid){
+    for(int i = oldest_entry; i < (oldest_entry+pipeline_size)%size; (i=i+1)%size){ //only see for entries that can be accomodated to the pipeline
+        if(!RS_stage_vector[i].valid){//if older entry itself is inavlid and oldest hasnt been updated only then can this happen.
             return -1;
         }
-        else if(RS_stage_vector[i].stage==-1 && RS_stage_vector[i].rs_entry.op==OpCode::LW && RS_stage_vector[i].rs_entry.src1_valid){ // Othere field is immediate, it is always valid.
-            return i;
+        else if(RS_stage_vector[i].stage==-1){ // Othere field is immediate, it is always valid.
+            if(RS_stage_vector[i].rs_entry.op==OpCode::LW && RS_stage_vector[i].rs_entry.src1_valid){
+            return i;}
+            else if(RS_stage_vector[i].rs_entry.op==OpCode::SW && RS_stage_vector[i].rs_entry.src1_valid && RS_stage_vector[i].rs_entry.src2_valid){ // Othere field is immediate, always valid.
+            return i;}
+            else{ return -1;} // an older entry itself is unready, beyond it nothing qualifies.
         }
-        else if(RS_stage_vector[i].stage==-1 && RS_stage_vector[i].rs_entry.op==OpCode::SW && RS_stage_vector[i].rs_entry.src1_valid && RS_stage_vector[i].rs_entry.src2_valid){ // Othere field is immediate, always valid.
-            return i;
-        }
+        // else we check for the next rs entry.
     }
     return -1;
 }
