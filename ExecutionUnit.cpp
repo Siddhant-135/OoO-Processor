@@ -16,6 +16,10 @@ if(name == UnitType::LOADSTORE){
 }
 }
 
+bool ExecutionUnit::check_output_bound(long long value) {
+    return (value >= MIN_N && value <= MAX_N);
+}
+
 UnitType ExecutionUnit::getUnitTypeForOp(OpCode op) {
     switch (op) {
         case OpCode::ADD:
@@ -61,7 +65,6 @@ if(idx!=-1){
     int src1 = rs_entry.src1_value; 
     int src2 = rs_entry.src2_value;
     int imm = rs_entry.imm_value; 
-    int dest = rs_entry.dest_value;
     int tag = rs_entry.ROB_Entry;
     OpCode op = rs_entry.op;
     int output = 0;
@@ -74,10 +77,21 @@ if(idx!=-1){
         output = (src1 - src2);
         else //(ADDI)
         output = add(src1, imm);
+
+        if(!check_output_bound(output)) {
+            result.has_exception = true;
+            output = 0;
+            std::cout << "    Adder overflow for ROB tag " << tag << "\n";
+        } 
     }
+    
     else if(name==UnitType::MULTIPLIER){//MUL
-        if(op == OpCode::MUL)
         output = mul(src1, src2);
+        if(!check_output_bound(temp_output)) {
+            result.has_exception = true;
+            output = 0;
+            std::cout << "    Multiplier overflow for ROB tag " << tag << "\n";
+        }
     }
     else if(name==UnitType::DIVIDER){//DIV, REM
         if(src2 == 0){

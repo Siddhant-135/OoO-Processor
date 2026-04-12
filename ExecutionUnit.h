@@ -11,6 +11,9 @@ class ExecutionUnit {
 private:
     std::vector<int>& memory; // common memory throughout (mainly for LW, SW)
     std::unique_ptr<RS> myRS; // associated reservation station
+    static constexpr long long MAX_N = 2147483647LL;
+    static constexpr long long MIN_N = -2147483648LL;
+    bool check_output_bound(long long value);
 
 public:
     // per-unit reservation station
