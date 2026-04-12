@@ -28,5 +28,5 @@ public:
     void invalidate_entry(int idx) override;
     void update_mem_addr_val() override;
     void ls_fwd() override;
-    pair<int, int> latest_sw_idx(int lw_idx);
+    std::pair<int, int> latest_sw_idx(int lw_idx);
 };

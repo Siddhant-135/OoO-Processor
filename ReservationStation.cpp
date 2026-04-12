@@ -99,3 +99,4 @@ void RS::rs_capture(int tag, int value){
     // fn that takes in a lw entry and finds the latest sw matching its mem_addr. If not found, chill, if found set the mem address. Should we have a forwarded bit too?
     ls_fwd();
 }
+ 

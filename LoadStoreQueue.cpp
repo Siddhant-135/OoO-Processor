@@ -10,7 +10,6 @@ void LoadStoreQueue::push(RSEntry temp){
     return;    
 }  
 
-// TO DO: FORWARDING FOR LOAD AFTER STORE.//THIS FUNCTION IS INCORRECT, NEEDS TO SEE THE LOAD AFTER STORE AD STORE AFTER LOAD CONFLICT AND THEN GET THE VALID ENTRY.
 int LoadStoreQueue::get_valid_entry(){
     // go down from oldest to as long as stuff is valid
     int idx = -1;
@@ -67,9 +66,12 @@ void LoadStoreQueue::update_mem_addr_val(){
     }
 }
 
-pair<int, int> LoadStoreQueue::latest_sw_idx(int lw_idx){ //returns <latest_sw_idx, mem_val> if both can be found.
+std::pair<int, int> LoadStoreQueue::latest_sw_idx(int lw_idx){ //returns <latest_sw_idx, mem_val> if both can be found.
     int latest_sw = -1;
-    int i = lw_idx-1;
+    if(lw_idx==oldest_entry){
+        return {-1,-1};
+    }
+    int i = (lw_idx-1+size)%size;
     while(true){
         if(RS_stage_vector[i].valid && RS_stage_vector[i].rs_entry.op == OpCode::SW){
             if(RS_stage_vector[i].rs_entry.mem_addr_valid && RS_stage_vector[lw_idx].rs_entry.mem_addr_valid){
@@ -92,17 +94,32 @@ pair<int, int> LoadStoreQueue::latest_sw_idx(int lw_idx){ //returns <latest_sw_i
     return {-1,-1};
 }
 
-void LoadStoreQueue::ls_fwd(){
-    for(int i=0;i<size;i++){
-        if(RS_stage_vector[i].valid && RS_stage_vector[i].rs_entry.op == OpCode::LW){
+void LoadStoreQueue::ls_fwd(){ 
+    
+    int i = oldest_entry;
+    if(i==youngest_entry){
+        return;
+    }
+    i=(i+1)%size;
+    while(true){
+        if(!RS_stage_vector[i].valid){
+            break;
+        }
+        
+        if(RS_stage_vector[i].rs_entry.op == OpCode::LW){
             if(RS_stage_vector[i].rs_entry.mem_addr_valid && !RS_stage_vector[i].rs_entry.ls_fwded && !RS_stage_vector[i].rs_entry.mem_val_valid){
-                pair<int, int> latest_sw = latest_sw_idx(i);
+                std::pair<int, int> latest_sw = latest_sw_idx(i);
                 if(latest_sw.first != -1){
                     RS_stage_vector[i].rs_entry.ls_fwded = true;
                     RS_stage_vector[i].rs_entry.mem_val = latest_sw.second;
                     RS_stage_vector[i].rs_entry.mem_val_valid = true;
                 }
             }
+        }
+        i = (i+1)%size;
+
+        if(i==(youngest_entry+1)%size){
+            break;
         }
     }
 }
