@@ -40,6 +40,8 @@ struct ROBEntry {
     bool ready_from_RS= false; //always ready to go to RS. This is instead bool for "has it received a value from RS" 
     int dest_regId = -1; 
     int dest_regVal = 0; //just store the dest_regVal. What about memory? NOT IN ROB
+    int dest_memAddr = -1; // NEW FIELD AS OLD ONE WAS FOR REG ADDRESS. INTRODUCED FOR SW OPERTING AT COMMIT STAGE
+    int dest_memVal = 0; // INTRODUCED FOR SW OPERTING AT COMMIT STAGE
 };
 
 struct RSEntry {

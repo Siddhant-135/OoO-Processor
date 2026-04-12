@@ -60,8 +60,12 @@ int Processor::getUnitIdx(OpCode op){
 }
 
 void Processor::stageFetch() {
-    if (pc >= inst_memory.size() || F_reg.valid) { // F_reg.valid check is for the case when fetch is stalled so we dont want to overwrite the fetched instruction.
+    if (pc >= inst_memory.size()) { // F_reg.valid check is for the case when fetch is stalled so we dont want to overwrite the fetched instruction.
         std::cout<<pc<<"PC has exceeded instruction memory. "<<inst_memory.size()<< " No more instructions to fetch.\n";
+        return;
+    }
+    if( F_reg.valid){
+        std::cout<<pc<<"Fetch register is already full. Stall: due to full ROB or RS or LSQ\n";
         return;
     }
     int current_pc = pc;
@@ -74,26 +78,33 @@ void Processor::stageFetch() {
 }
 
 void Processor::stageDecode() {
-    //we think decode never stalls. // I support her thesis for now.
+    //we think decode never stalls. // I support her thesis for now. Decode will stall if RS or ROB or LSQ is full
     //need control for the 1st instruction: 
     //valid bit in F_reg, D_reg
-    if(!F_reg.valid){
-        std::cout<<"No valid instruction in fetch register to decode.\n";
+    if(!F_reg.valid && !D_reg.valid){ // geenral cases would have been handled by the fetch call but if pc reached end of program and then a stall happened, the decode would never retry.
+        std::cout<<"No valid instruction in fetch register to decode or nothing in decode register.\n";
         return;
     }
-    D_reg.inst = F_reg.inst;
-    D_reg.bp_info = F_reg.bp_info;
-    F_reg.valid = false; // remains false until next fetch.
-    D_reg.valid = true;
-    OpCode op = D_reg.inst.op;
-    int uId = getUnitIdx(op);
-    std::cout<<"Decoded instruction with opcode "<<static_cast<int>(D_reg.inst.op)<<" for execution unit "<<uId<<"\n";
-    if (uId == -1) {
-        std::cout<<"Unsupported opcode encountered during decode. Halting.\n";
-        return;
+    // if D_reg valid is true, don't replace the old entry, rather try again.
+    
+    if(!D_reg.valid){ //D_reg is ready to take the new entry and free the valid F_Reg
+        D_reg.inst = F_reg.inst;
+        D_reg.bp_info = F_reg.bp_info;
+        F_reg.valid = false; // remains false until next fetch. GOOD THING, KEEP. 
+        D_reg.valid = true;
+        OpCode op = D_reg.inst.op;
+        int uId = getUnitIdx(op);
+        std::cout<<"Decoded instruction with opcode "<<static_cast<int>(D_reg.inst.op)<<" for execution unit "<<uId<<"\n";
+        if (uId == -1) {
+            std::cout<<"Unsupported opcode encountered during decode. Halting.\n";
+            return;
+        }
     }
+
+    // THE ELSE PART, I.E A STILL-VALID D_REG, MEANING A DECODE IN ITS STALL STATE. ALSO HAS TO EECUTE FOR A NEWLY ENCOUNTERED DECODE SO CHILL
     //cases acc to which instruction it is. But call step to all exe units regardless.
-    if(myROB.is_Full() || units[uId].isRSFull()){
+    int uId = getUnitIdx(D_reg.inst.op);
+    if(myROB.is_Full() || units[uId].isRSFull()){ //incorporates LSQ full too.
         //stall
         if(myROB.is_Full()) std::cout<<"Stalling at decode stage due to full ROB.\n";
         else std::cout<<"Stalling at decode stage due to full RS of execution unit "<<uId<<".\n";
@@ -157,7 +168,7 @@ void Processor::stageDecode() {
         std::cout<<"RS entry details: src2_valid "<<temp_rs_entry.src2_valid<<" src2_value "<<temp_rs_entry.src2_value<<" src2_tag "<<temp_rs_entry.src2_tag<<"\n";
         temp_rs_entry.imm_value = D_reg.inst.imm;
         temp_rs_entry.dest_value = D_reg.inst.dest;
-        if (D_reg.inst.dest > 0) {
+        if (D_reg.inst.dest > 0) { // sw doesnt have a dest.
             myRAT.add_to_RAT(D_reg.inst.dest, temp_rs_entry.ROB_Entry);
         }
         //push to appropriate reservation station too.
