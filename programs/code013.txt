@@ -1,0 +1,11 @@
+# Edge 2: Cascading SW→LW→SW→LW chain — forwarding through multiple stages
+# Expected: x5 = 10, x7 = 20, memory[0] = 20, memory[1] = 20
+.M: 0 0
+addi x1, x0, 10
+addi x2, x0, 0
+addi x3, x0, 1
+sw x1 M(x2)
+lw x5 M(x2)
+addi x6, x5, 10
+sw x6 M(x3)
+lw x7 M(x3)

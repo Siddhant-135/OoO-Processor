@@ -1,0 +1,8 @@
+# Edge 11: SW overwrites pre-initialized memory, LW reads overwritten value
+# Ensures the old memory value is replaced, not appended
+# Expected: x5 = 999 (NOT the original 42), memory[0] = 999
+.M: 42
+addi x1, x0, 0
+addi x2, x0, 999
+sw x2 M(x1)
+lw x5 M(x1)

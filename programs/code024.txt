@@ -1,0 +1,11 @@
+# Edge 13: LW/SW interleaved with long-latency ALU ops (mul/div between memory ops)
+# Tests LSQ behavior when ALU instructions cause pipeline stalls between memory ops
+# Expected: x7 = 25, x10 = 600 (mul result), memory[0] = 25, memory[1] = 600
+.M: 25 0
+addi x1, x0, 0
+addi x2, x0, 1
+lw x7 M(x1)
+addi x8, x0, 24
+mul x10, x7, x8
+sw x10 M(x2)
+lw x11 M(x2)

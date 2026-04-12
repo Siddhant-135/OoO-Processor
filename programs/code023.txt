@@ -1,0 +1,14 @@
+# Edge 12: WAW (Write-After-Write) hazard — two SWs to different addresses, then swap
+# Tests that memory writes commit in program order
+# Expected: memory[0] = 20, memory[1] = 10, x5 = 20, x6 = 10
+.M: 0 0
+addi x1, x0, 10
+addi x2, x0, 20
+addi x3, x0, 0
+addi x4, x0, 1
+sw x1 M(x3)
+sw x2 M(x4)
+sw x2 M(x3)
+sw x1 M(x4)
+lw x5 M(x3)
+lw x6 M(x4)

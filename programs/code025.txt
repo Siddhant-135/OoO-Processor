@@ -1,0 +1,7 @@
+# Edge 14: Store value 0 — make sure 0 is not confused with "invalid" or "empty"
+# Expected: x5 = 0 (explicitly stored zero), memory[0] = 0
+.M: 77
+addi x1, x0, 0
+sw x0 M(x1)
+lw x5 M(x1)
+addi x6, x5, 1

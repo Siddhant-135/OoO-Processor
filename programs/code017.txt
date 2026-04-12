@@ -1,0 +1,16 @@
+# Edge 6: Interleaved SW/LW to adjacent addresses — should NOT forward across addresses
+# Expected: x10 = 11 (from mem init), x11 = 22 (from mem init), x12 = 33 (from mem init)
+#           memory[0] = 111, memory[1] = 222, memory[2] = 333
+.M: 11 22 33
+addi x1, x0, 0
+addi x2, x0, 1
+addi x3, x0, 2
+addi x4, x0, 111
+addi x5, x0, 222
+addi x6, x0, 333
+lw x10 M(x1)
+sw x4 M(x1)
+lw x11 M(x2)
+sw x5 M(x2)
+lw x12 M(x3)
+sw x6 M(x3)
