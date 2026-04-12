@@ -2,7 +2,7 @@
 
 void RAT::add_to_RAT (int idx, int ROBId){
     RAT_vector[idx].valid = false;
-    std::cout<<"Adding to RAT: Register "<<idx<<" is now aliased to ROB entry "<<ROBId<<" and validity set to false\n";
+    // std::cout<<"Adding to RAT: Register "<<idx<<" is now aliased to ROB entry "<<ROBId<<" and validity set to false\n";
     RAT_vector[idx].ROBId = ROBId;
 }
 //removeEntry: return it to valid and -1

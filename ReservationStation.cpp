@@ -80,21 +80,21 @@ void RS::invalidate_entry(int idx){
 }
 
 void RS::rs_capture(int tag, int value){
-    std::cout<<"    RS capture: Checking RS entries for tag "<<tag<<"\n";
+    // std::cout<<"    RS capture: Checking RS entries for tag "<<tag<<"\n";
     for(int i=0;i<size;i++){
         if(RS_stage_vector[i].valid){
-            std::cout<<"    valid entry details:"<<"\n";
-            std::cout<<"        src1_valid "<<RS_stage_vector[i].rs_entry.src1_valid<<" src1_value "<<RS_stage_vector[i].rs_entry.src1_value<<" src1_tag "<<RS_stage_vector[i].rs_entry.src1_tag<<"\n";
+            // std::cout<<"    valid entry details:"<<"\n";
+            // std::cout<<"        src1_valid "<<RS_stage_vector[i].rs_entry.src1_valid<<" src1_value "<<RS_stage_vector[i].rs_entry.src1_value<<" src1_tag "<<RS_stage_vector[i].rs_entry.src1_tag<<"\n";
             if((!RS_stage_vector[i].rs_entry.src1_valid) && RS_stage_vector[i].rs_entry.src1_tag==tag){ // TO CHECK : ROB ENTRY OR SRC1 ENTRY ??
                 RS_stage_vector[i].rs_entry.src1_valid=true;
                 RS_stage_vector[i].rs_entry.src1_value=value;
-                std::cout<<"        RS capture: Updated src1 of RS entry with ROB tag "<<tag<<" to value "<<value<<"\n";
+                // std::cout<<"        RS capture: Updated src1 of RS entry with ROB tag "<<tag<<" to value "<<value<<"\n";
             }
-            std::cout<<"        src2_valid "<<RS_stage_vector[i].rs_entry.src2_valid<<" src2_value "<<RS_stage_vector[i].rs_entry.src2_value<<" src2_tag "<<RS_stage_vector[i].rs_entry.src2_tag<<"\n";
+            // std::cout<<"        src2_valid "<<RS_stage_vector[i].rs_entry.src2_valid<<" src2_value "<<RS_stage_vector[i].rs_entry.src2_value<<" src2_tag "<<RS_stage_vector[i].rs_entry.src2_tag<<"\n";
             if((!RS_stage_vector[i].rs_entry.src2_valid) && RS_stage_vector[i].rs_entry.src2_tag==tag){
                 RS_stage_vector[i].rs_entry.src2_valid=true;
                 RS_stage_vector[i].rs_entry.src2_value=value;
-                std::cout<<"        RS capture: Updated src2 of RS entry with ROB tag "<<tag<<" to value "<<value<<"\n";
+                // std::cout<<"        RS capture: Updated src2 of RS entry with ROB tag "<<tag<<" to value "<<value<<"\n";
             }
         }
     }

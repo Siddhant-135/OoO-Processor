@@ -86,7 +86,7 @@ if(idx!=-1){
         if(!check_output_bound(temp_output)) {
             result.has_exception = true;
             output = 0;
-            std::cout << "    Adder overflow for ROB tag " << tag << "\n";
+            // std::cout << "    Adder overflow for ROB tag " << tag << "\n";
         } 
         else {
             if (op == OpCode::SLTI || op == OpCode::SLT)
@@ -101,7 +101,7 @@ if(idx!=-1){
         if(!check_output_bound(temp_output)) {
             result.has_exception = true;
             output = 0;
-            std::cout << "    Multiplier overflow for ROB tag " << tag << "\n";
+            // std::cout << "    Multiplier overflow for ROB tag " << tag << "\n";
         }
         else {output = static_cast<int>(temp_output);}
     }
@@ -109,7 +109,7 @@ if(idx!=-1){
         if(src2 == 0){
             result.has_exception = true;
             output = 0;
-            std::cout << "    Divider exception: divide/remainder by zero for ROB tag " << tag << "\n";
+            // std::cout << "    Divider exception: divide/remainder by zero for ROB tag " << tag << "\n";
         }
         else if(op == OpCode::DIV)
         temp_output = div(src1, src2);
@@ -118,7 +118,7 @@ if(idx!=-1){
         if(!check_output_bound(temp_output)) {
             result.has_exception = true;
             output = 0;
-            std::cout << "    Divider overflow for ROB tag " << tag << "\n";
+            // std::cout << "    Divider overflow for ROB tag " << tag << "\n";
         }
         else {output = static_cast<int>(temp_output);}
     }
@@ -141,8 +141,8 @@ if(idx!=-1){
             if(out_of_bounds){
                 result.has_exception = true;
                 output = 0;
-                std::cout << "    Memory exception: LW address out of bounds (" << mem_addr
-                          << ") for ROB tag " << tag << "\n";
+                // std::cout << "    Memory exception: LW address out of bounds (" << mem_addr
+                //           << ") for ROB tag " << tag << "\n";
             }
             else if(rs_entry.ls_fwded){//can also change to mem_valid but okay.
                 output = rs_entry.mem_val;
@@ -156,8 +156,8 @@ if(idx!=-1){
                 result.has_exception = true;
                 result.mem_addr = -1;
                 result.mem_val = 0;
-                std::cout << "    Memory exception: SW address out of bounds (" << mem_addr
-                          << ") for ROB tag " << tag << "\n";
+                // std::cout << "    Memory exception: SW address out of bounds (" << mem_addr
+                //           << ") for ROB tag " << tag << "\n";
             } else {
                 result.mem_addr = mem_addr;
                 result.mem_val = src1;
@@ -188,14 +188,14 @@ if(idx!=-1){
     result.value = output;
     myRS->invalidate_entry(idx); 
     myRS->PipelineCounter--;
-    std::cout<<"Im here!\n";
+    // std::cout<<"Im here!\n";
     if(myRS->PipelineCounter<latency){//see fix, divide latency by stages per instruction.
         loadToPipeline();
     }
     return result; 
 }
 else{
-    std::cout<<"Im there, nothing ready out of pipeline yet!\n";
+    // std::cout<<"Im there, nothing ready out of pipeline yet!\n";
     if(myRS->PipelineCounter<latency){//see fix, divide latency by stages per instruction.
         loadToPipeline();
         }
@@ -205,7 +205,7 @@ else{
 
 void ExecutionUnit::exu_capture (int tag, int val)
 {
-    std::cout<<"Execution Unit "<<static_cast<int>(name)<<" capturing on CDB: tag "<<tag<<" value "<<val<<"\n";
+    // std::cout<<"Execution Unit "<<static_cast<int>(name)<<" capturing on CDB: tag "<<tag<<" value "<<val<<"\n";
     myRS->rs_capture(tag, val);
 }
 

@@ -40,7 +40,7 @@ void Processor::flush() {
 
 void Processor::broadcastOnCDB( std::vector<ExuResult> b_vec){
     //each ROB entry should , each Execution Unit should 
-    std::cout<<"In Broadcast\n";
+    // std::cout<<"In Broadcast\n";
     myROB.rob_capture_results(b_vec);
     for(int j=0; j<units.size(); j++)
     {
@@ -62,20 +62,20 @@ int Processor::getUnitIdx(OpCode op){
 
 void Processor::stageFetch() {
     if (pc >= inst_memory.size()) { // F_reg.valid check is for the case when fetch is stalled so we dont want to overwrite the fetched instruction.
-        std::cout<<pc<<"PC has exceeded instruction memory. "<<inst_memory.size()<< " No more instructions to fetch.\n";
+        // std::cout<<pc<<"PC has exceeded instruction memory. "<<inst_memory.size()<< " No more instructions to fetch.\n";
         return;
     }
     if( F_reg.valid){
-        std::cout<<pc<<"Fetch register is already full. Stall: due to full ROB or RS or LSQ\n";
+        // std::cout<<pc<<"Fetch register is already full. Stall: due to full ROB or RS or LSQ\n";
         return;
     }
     int current_pc = pc;
     F_reg.inst = inst_memory[current_pc]; 
     F_reg.bp_info = bp.make_prediction_info(current_pc, F_reg.inst.imm, F_reg.inst.op);
-    std::cout<<"pc: "<<current_pc<<" fetched instruction with opcode "<<static_cast<int>(F_reg.inst.op)<<"\n"; //HOW TO MAKE THE OPCODE STRING
+    // std::cout<<"pc: "<<current_pc<<" fetched instruction with opcode "<<static_cast<int>(F_reg.inst.op)<<"\n";
     F_reg.valid = true;
     pc = F_reg.bp_info.predicted_next_pc; // complete takeover by bp, pc+=1 bhi isme hi hai, tbf early on bhi conditional daal sakte but works for now.
-    std::cout<<"Branch Predictor predicted next pc to be "<<F_reg.bp_info.predicted_next_pc<<"\n";
+    // std::cout<<"Branch Predictor predicted next pc to be "<<F_reg.bp_info.predicted_next_pc<<"\n";
 }
 
 void Processor::stageDecode() {
@@ -83,7 +83,7 @@ void Processor::stageDecode() {
     //need control for the 1st instruction: 
     //valid bit in F_reg, D_reg
     if(!F_reg.valid && !D_reg.valid){ // geenral cases would have been handled by the fetch call but if pc reached end of program and then a stall happened, the decode would never retry.
-        std::cout<<"No valid instruction in fetch register to decode or nothing in decode register.\n";
+        // std::cout<<"No valid instruction in fetch register to decode or nothing in decode register.\n";
         return;
     }
     // if D_reg valid is true, don't replace the old entry, rather try again.
@@ -95,9 +95,9 @@ void Processor::stageDecode() {
         D_reg.valid = true;
         OpCode op = D_reg.inst.op;
         int uId = getUnitIdx(op);
-        std::cout<<"Decoded instruction with opcode "<<static_cast<int>(D_reg.inst.op)<<" for execution unit "<<uId<<"\n";
+        // std::cout<<"Decoded instruction with opcode "<<static_cast<int>(D_reg.inst.op)<<" for execution unit "<<uId<<"\n";
         if (uId == -1) {
-            std::cout<<"Unsupported opcode encountered during decode. Halting.\n";
+            // std::cout<<"Unsupported opcode encountered during decode. Halting.\n";
             return;
         }
 
@@ -105,7 +105,7 @@ void Processor::stageDecode() {
         // No register write, no memory effect, no need for ROB/RS/execute/commit.
         // Just consume it and free the decode register.
         if (D_reg.inst.op == OpCode::J) {
-            std::cout<<"Jump instruction resolved at fetch. Consuming at decode, no ROB/RS needed.\n";
+            // std::cout<<"Jump instruction resolved at fetch. Consuming at decode, no ROB/RS needed.\n";
             D_reg.valid = false;
             return;
         }
@@ -116,13 +116,13 @@ void Processor::stageDecode() {
     int uId = getUnitIdx(D_reg.inst.op);
     if(myROB.is_Full() || rs_full_before_execute[static_cast<size_t>(uId)]){ // RS fullness from before execute (same cycle).
         //stall
-        if(myROB.is_Full()) std::cout<<"Stalling at decode stage due to full ROB.\n";
-        else std::cout<<"Stalling at decode stage due to full RS of execution unit "<<uId<<".\n";
-        std::cout<<"Stalling at decode stage due to full ROB or RS.\n";
+        // if(myROB.is_Full()) std::cout<<"Stalling at decode stage due to full ROB.\n";
+        // else std::cout<<"Stalling at decode stage due to full RS of execution unit "<<uId<<".\n";
+        // std::cout<<"Stalling at decode stage due to full ROB or RS.\n";
         return;
     }
     else{
-        std::cout<<"Pushing instruction to ROB and RS for execution unit "<<uId<<"\n";
+        // std::cout<<"Pushing instruction to ROB and RS for execution unit "<<uId<<"\n";
         myROB.push(D_reg.inst);
         // Make the D_reg.inst.destRegId as false too!! happens in My_RAT.add_to RAT.
         int rob_tag = myROB.newest_entry_idx();
@@ -176,15 +176,15 @@ void Processor::stageDecode() {
             }
         }
 
-        std::cout<<"RS entry details: src1_valid "<<temp_rs_entry.src1_valid<<" src1_value "<<temp_rs_entry.src1_value<<" src1_tag "<<temp_rs_entry.src1_tag<<"\n";
-        std::cout<<"RS entry details: src2_valid "<<temp_rs_entry.src2_valid<<" src2_value "<<temp_rs_entry.src2_value<<" src2_tag "<<temp_rs_entry.src2_tag<<"\n";
+        // std::cout<<"RS entry details: src1_valid "<<temp_rs_entry.src1_valid<<" src1_value "<<temp_rs_entry.src1_value<<" src1_tag "<<temp_rs_entry.src1_tag<<"\n";
+        // std::cout<<"RS entry details: src2_valid "<<temp_rs_entry.src2_valid<<" src2_value "<<temp_rs_entry.src2_value<<" src2_tag "<<temp_rs_entry.src2_tag<<"\n";
         temp_rs_entry.imm_value = D_reg.inst.imm;
         temp_rs_entry.dest_value = D_reg.inst.dest;
         if (D_reg.inst.dest > 0) { // sw doesnt have a dest.
             myRAT.add_to_RAT(D_reg.inst.dest, temp_rs_entry.ROB_Entry);
         }
         //push to appropriate reservation station too.
-        std::cout<<"Pushing to RS of execution unit "<<uId<<" with ROB tag "<<temp_rs_entry.ROB_Entry<<"\n";
+        // std::cout<<"Pushing to RS of execution unit "<<uId<<" with ROB tag "<<temp_rs_entry.ROB_Entry<<"\n";
         units[uId].pushToRS(temp_rs_entry);
         
         // Reset decode register valid flag meaning we've fully dispatched this instruction
@@ -198,35 +198,35 @@ void Processor::stageExecuteAndBroadcast() {
     ExuResult temp;
     std::vector <ExuResult> broadcast_vector;
     for(int i=0;i<units.size();i++){
-        std::cout<<"Executing unit "<<i<<"\n";
+        // std::cout<<"Executing unit "<<i<<"\n";
         temp = units[i].executeCycle();
-        std::cout<<"    Execution result: tag "<<temp.tag<<" value "<<temp.value<<"\n";
+        // std::cout<<"    Execution result: tag "<<temp.tag<<" value "<<temp.value<<"\n";
         if(temp.tag != -1){
-        std::cout<<"    Adding to broadcast vector: tag "<<temp.tag<<" value "<<temp.value<<"\n";
+        // std::cout<<"    Adding to broadcast vector: tag "<<temp.tag<<" value "<<temp.value<<"\n";
         broadcast_vector.push_back(temp);
         // units[i].loadToPipeline(); // REDUNDANT & BUGGY: executeCycle() already handles capacity bounds
         }
     } //the broadcast vector now contains all the results of the calculations.
     //tell all execution units to get a new entry in the works too.
-    std::cout<<"Broadcasting results to CDB.\n";
+    // std::cout<<"Broadcasting results to CDB.\n";
     broadcastOnCDB(broadcast_vector);
 }
 
 void Processor::stageCommit() {
     if (myROB.is_Empty()) {
-        std::cout<<"Cannot commit yet. ROB is empty \n";
+        // std::cout<<"Cannot commit yet. ROB is empty \n";
         return;
     }
     int oldest_tag = myROB.oldest_idx();
     ROBEntry entry = myROB.to_be_commited_entry(); //Returns oldest entry., and the ready one. In BP context it is the real entry.
     BP_info pred_info = myROB.to_be_commited_prediction(); // The prediction by the Branch Predictor. If the entry isnt a branch, the validity bit of this is zero.
-    std::cout<<"Trying to commit ROB entry with dest reg "<<entry.dest_regId<<" and value "<<entry.dest_regVal<<"\n";
+    // std::cout<<"Trying to commit ROB entry with dest reg "<<entry.dest_regId<<" and value "<<entry.dest_regVal<<"\n";
     int idx = entry.dest_regId; // -1 for lot of commands, such as SW, Branches etc.
 
     if(entry.ready_from_RS){
     if (entry.has_exception) {
-        std::cout << "Exception at commit for ROB entry " << oldest_tag
-                  << " (instruction PC " << entry.inst_pc << "). Halting.\n";
+        // std::cout << "Exception at commit for ROB entry " << oldest_tag
+        //           << " (instruction PC " << entry.inst_pc << "). Halting.\n";
         pc = entry.inst_pc;
         exception = true;
         flush();
@@ -241,7 +241,7 @@ void Processor::stageCommit() {
         bp.update(pred_info.fetch_pc, taken, was_correct); //update the FSM.
 
         if (actual_next_pc != pred_info.predicted_next_pc) {
-            std::cout<<"Branch misprediction at PC "<<pred_info.fetch_pc<<". Flushing younger instructions.\n";
+            // std::cout<<"Branch misprediction at PC "<<pred_info.fetch_pc<<". Flushing younger instructions.\n";
             pc = actual_next_pc;
             myROB.pop(); // THE ENTRY IS READY SO POP IS WORKING.
             flush();
@@ -249,7 +249,7 @@ void Processor::stageCommit() {
             return;
         }
         else{
-            std::cout<<"Branch prediction correct for branch at PC "<<pred_info.fetch_pc<<".\n";
+            // std::cout<<"Branch prediction correct for branch at PC "<<pred_info.fetch_pc<<".\n";
             myROB.pop(); // THE ENTRY IS READY SO POP IS WORKING.
             return;
         }
@@ -262,20 +262,21 @@ void Processor::stageCommit() {
             if (myRAT.get_alias(idx) == oldest_tag) {
                 myRAT.rem_from_RAT(idx); 
             }
-            std::cout<<"Committed ROB entry with dest reg "<<idx<<" and value "<<entry.dest_regVal<<"\n";
+            // std::cout<<"Committed ROB entry with dest reg "<<idx<<" and value "<<entry.dest_regVal<<"\n";
         }
         else{
             if (entry.dest_memAddr != -1) {
                 Memory[entry.dest_memAddr] = entry.dest_memVal;
-                std::cout<<"Committed SW instruction at address "<<entry.dest_memAddr<<" with value "<<entry.dest_memVal<<"\n";
+                // std::cout<<"Committed SW instruction at address "<<entry.dest_memAddr<<" with value "<<entry.dest_memVal<<"\n";
             }
-            else std::cout<<"Removed from ROB the entry trying to commit to x0 and value: "<<entry.dest_regVal<<"\n";
+            // else std::cout<<"Removed from ROB the entry trying to commit to x0 and value: "<<entry.dest_regVal<<"\n";
         }
     }
     // REDUNDANT/BUGGY LOGIC REMOVED FROM HERE
     }
     else{
-        std::cout<<"Cannot commit yet. The oldest value isn't ready.\n";}
+        // std::cout<<"Cannot commit yet. The oldest value isn't ready.\n";
+        }
 };
     
 bool Processor::step() {
@@ -290,11 +291,11 @@ bool Processor::step() {
     // 3. Decode register has dispatched its contents (!D_reg.valid)
     // 4. All dispatched instructions have committed (myROB.is_Empty())
     if(pc >= inst_memory.size() && !F_reg.valid && !D_reg.valid && myROB.is_Empty()){ 
-        std::cout<<"\n[+] Execution complete! Total clock cycles: "<<clock_cycle<<"\n";
+        // std::cout<<"\n[+] Execution complete! Total clock cycles: "<<clock_cycle<<"\n";
         return false;
     }
 
-    std::cout<<"\n--- CYCLE "<<clock_cycle<<" (PC: "<<pc<<") ---\n";
+    // std::cout<<"\n--- CYCLE "<<clock_cycle<<" (PC: "<<pc<<") ---\n";
     stageCommit();
     if (exception) {
         clock_cycle += 1;

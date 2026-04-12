@@ -3,6 +3,7 @@
 #include <vector>
 #include "Parser.h"
 
+#if 0
 static const char* opToString(OpCode op) {
     switch (op) {
         case OpCode::ADD: return "ADD";
@@ -29,6 +30,7 @@ static const char* opToString(OpCode op) {
     }
     return "UNKNOWN";
 }
+#endif
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -53,6 +55,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+#if 0
     std::cout << "Parsed " << inst_memory.size() << " instructions:\n";
     for (int i = 0; i < static_cast<int>(inst_memory.size()); i++) {
         const Instruction& inst = inst_memory[i];
@@ -66,6 +69,7 @@ int main(int argc, char* argv[]) {
             << " pc=" << inst.pc
             << "\n";
     }
+#endif
 
     return 0;
 }
