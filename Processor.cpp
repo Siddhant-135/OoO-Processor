@@ -120,12 +120,13 @@ void Processor::stageDecode() {
         RSEntry temp_rs_entry;
         temp_rs_entry.ROB_Entry = rob_tag;
         temp_rs_entry.op = D_reg.inst.op;
-
+    
         if (D_reg.inst.src1 < 0) temp_rs_entry.src1_valid = true; // is this causing error for the BEQ case? Should not be so
         else temp_rs_entry.src1_valid = myRAT.reg_valid(D_reg.inst.src1);
 
         if (D_reg.inst.src2 < 0) temp_rs_entry.src2_valid = true;
-        else temp_rs_entry.src2_valid = myRAT.reg_valid(D_reg.inst.src2);
+        else temp_rs_entry.src2_valid = 
+        myRAT.reg_valid(D_reg.inst.src2);
 
         if(temp_rs_entry.src1_valid && temp_rs_entry.src2_valid){
             if (D_reg.inst.src1 >= 0) temp_rs_entry.src1_value=ARF[D_reg.inst.src1];

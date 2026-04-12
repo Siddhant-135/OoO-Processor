@@ -53,7 +53,7 @@ public:
 
     void flush();
 
-    void broadcastOnCDB( std::vector<std::pair<int,int>> b_vec);
+    void broadcastOnCDB( std::vector<ExuResult> b_vec);
 
     int getUnitIdx(OpCode op);
 

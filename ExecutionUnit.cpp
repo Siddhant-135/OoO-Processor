@@ -98,8 +98,14 @@ if(idx!=-1){
         output = imm; 
     }
     else if(name == UnitType::LOADSTORE){//LW, SW  forwarding needs to be added in get ready entry.
-        if(op == OpCode::LW)
-        output = memory[src1 + imm]; 
+        if(op == OpCode::LW){
+            if(rs_entry.ls_fwded){//can also change to mem_valid but okay.
+                output = rs_entry.mem_val;
+            }
+            else{
+                output = memory[src1 + imm]; 
+            }
+        }
         else if(op == OpCode::SW){
             // memory[src2 + imm] = src1; // the real execution will happen in commit.
             result.mem_addr = src2 + imm;

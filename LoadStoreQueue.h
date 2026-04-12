@@ -25,6 +25,8 @@ public:
     void push(RSEntry temp) override;
     int get_valid_entry() override;
     void reset() override;
-        // void lsq_capture (int tag, int val) override;
-        // void executeCycle(std::vector<int>& Memory);
+    void invalidate_entry(int idx) override;
+    void update_mem_addr_val() override;
+    void ls_fwd() override;
+    pair<int, int> latest_sw_idx(int lw_idx);
 };

@@ -42,13 +42,17 @@ class RS {
     int update_rs(); // update_rs(), returns index.
     virtual void reset();
 
-    void invalidate_entry(int idx);
+    virtual void invalidate_entry(int idx);
 
     void pushToPipeline(int idx); // pushes the ready entry to the pipeline. Called by the execution unit when it is ready to accept a new entry. Also updates the pipeline stage of the entry.
 
     RSEntry& get_entry(int idx){ return RS_stage_vector[idx].rs_entry; } // much better: single point access to everything
 
     void rs_capture(int tag, int value);
+
+    virtual void update_mem_addr_val(){};
+    
+    virtual void ls_fwd(){};
 
     bool hasPendingWork(){
         for (int i = 0; i < size; i++) {

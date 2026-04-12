@@ -43,3 +43,66 @@ void LoadStoreQueue::invalidate_entry(int idx){
     RS_stage_vector[idx].valid = false;
     RS_stage_vector[idx].stage = -1;
 }
+
+void LoadStoreQueue::update_mem_addr_val(){
+    for(int i=0;i<size;i++){
+        if(RS_stage_vector[i].valid){
+            if(RS_stage_vector[i].rs_entry.op == OpCode::LW){
+                if(RS_stage_vector[i].rs_entry.src1_valid && !RS_stage_vector[i].rs_entry.mem_addr_valid    ){ //prevent multiple accesses to this by a mem addr_valid bit? or ok?
+                    RS_stage_vector[i].rs_entry.mem_addr = RS_stage_vector[i].rs_entry.src1_value + RS_stage_vector[i].rs_entry.imm_value;
+                    RS_stage_vector[i].rs_entry.mem_addr_valid = true;
+                }   
+            }
+            else if(RS_stage_vector[i].rs_entry.op == OpCode::SW){
+                if(RS_stage_vector[i].rs_entry.src2_valid && !RS_stage_vector[i].rs_entry.mem_addr_valid){
+                    RS_stage_vector[i].rs_entry.mem_addr = RS_stage_vector[i].rs_entry.src2_value + RS_stage_vector[i].rs_entry.imm_value;
+                    RS_stage_vector[i].rs_entry.mem_addr_valid = true;
+                }
+                if(RS_stage_vector[i].rs_entry.src1_valid && !RS_stage_vector[i].rs_entry.mem_val_valid){
+                    RS_stage_vector[i].rs_entry.mem_val = RS_stage_vector[i].rs_entry.src1_value;
+                    RS_stage_vector[i].rs_entry.mem_val_valid = true;
+                }
+            }
+        }
+    }
+}
+
+pair<int, int> LoadStoreQueue::latest_sw_idx(int lw_idx){ //returns <latest_sw_idx, mem_val> if both can be found.
+    int latest_sw = -1;
+    int i = lw_idx-1;
+    while(true){
+        if(RS_stage_vector[i].valid && RS_stage_vector[i].rs_entry.op == OpCode::SW){
+            if(RS_stage_vector[i].rs_entry.mem_addr_valid && RS_stage_vector[lw_idx].rs_entry.mem_addr_valid){
+                if(RS_stage_vector[i].rs_entry.mem_addr == RS_stage_vector[lw_idx].rs_entry.mem_addr){//validity of mem_addr and mem_val bt is NEEDED.
+                    latest_sw = i;
+                    if(RS_stage_vector[i].rs_entry.mem_val_valid){
+                        return {latest_sw, RS_stage_vector[i].rs_entry.mem_val};
+                    }
+                    else{
+                        // we have to wait for the sw to get its mem_val
+                        return {-1,-1};
+                    }
+                }
+            }
+        }
+        if(i==oldest_entry) break;
+        i = (i-1+size)%size;
+
+    }
+    return {-1,-1};
+}
+
+void LoadStoreQueue::ls_fwd(){
+    for(int i=0;i<size;i++){
+        if(RS_stage_vector[i].valid && RS_stage_vector[i].rs_entry.op == OpCode::LW){
+            if(RS_stage_vector[i].rs_entry.mem_addr_valid && !RS_stage_vector[i].rs_entry.ls_fwded && !RS_stage_vector[i].rs_entry.mem_val_valid){
+                pair<int, int> latest_sw = latest_sw_idx(i);
+                if(latest_sw.first != -1){
+                    RS_stage_vector[i].rs_entry.ls_fwded = true;
+                    RS_stage_vector[i].rs_entry.mem_val = latest_sw.second;
+                    RS_stage_vector[i].rs_entry.mem_val_valid = true;
+                }
+            }
+        }
+    }
+}

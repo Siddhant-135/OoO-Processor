@@ -52,7 +52,12 @@ struct RSEntry {
     int src1_tag = -1, src2_tag = -1, src1_value = -1, src2_value = -1;
     int imm_value = 0, dest_value = -1;
     int ROB_Entry = -1;
+    int mem_addr = -1;
+    int mem_val = 0;
     OpCode op = OpCode::ADD;
+    bool ls_fwded = false;
+    bool mem_addr_valid = false;
+    bool mem_val_valid = false;
 };
 
 struct ExuResult{

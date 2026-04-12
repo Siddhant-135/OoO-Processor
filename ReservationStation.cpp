@@ -92,4 +92,10 @@ void RS::rs_capture(int tag, int value){
             }
         }
     }
+    // load store forwarding to happen here.
+    // sl forwarding is the updation of the dependent load from the store when it shares the same memory address.
+    // first do a pass and update all the correct values and addresses for entries that are lw/sw (need to do this each time since src1 and src2 might not get ready)
+    update_mem_addr_val(); //relevant for LSQ
+    // fn that takes in a lw entry and finds the latest sw matching its mem_addr. If not found, chill, if found set the mem address. Should we have a forwarded bit too?
+    ls_fwd();
 }
