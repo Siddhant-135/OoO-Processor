@@ -86,17 +86,17 @@ void Parser::parseFile(std::ifstream& file, std::vector<Instruction>& inst_memor
                 inst.src1 = std::stoi(reg.substr(1));
                 inst.imm = Parser::getValue(mem_alias, mem_loc); // Implementation: store memory[imm + value from src1] into dest.
             }
-            else if (op==OpCode::SW) // Instruction type sw x5 A(x4)  to be interpreted as src1 = x5, imm = A, dest = x4. lw is different and separately handled in the lw case above.
+            else if (op==OpCode::SW) // Instruction type sw x5 A(x4)  to be interpreted as src1 = x5, imm = A, src2 = x4. lw is different and separately handled in the lw case above.
             {
-                std::string source, dest;
-                iss >> source >> dest;
-                int src_reg = std::stoi(source.substr(1)); 
+                std::string source, src2;
+                iss >> source >> src2;
+                int src_reg = std::stoi(source.substr(1)); // just the reg number. the vakue is accessed by the Processor ka ARF, we dont that access to it here.
                 inst.src1 = src_reg; // value from src1 will be stored into memory[imm + value from dest]
-                auto l = dest.find('(');
-                auto r = dest.find(')');
-                std::string mem_loc = dest.substr(0, l);
-                std::string reg = dest.substr(l+1, r-l-1);
-                inst.dest = std::stoi(reg.substr(1));
+                auto l = src2.find('(');
+                auto r = src2.find(')');
+                std::string mem_loc = src2.substr(0, l); //the memory array that it is part of.
+                std::string reg = src2.substr(l+1, r-l-1);
+                inst.src2 = std::stoi(reg.substr(1));
                 inst.imm = Parser::getValue(mem_alias, mem_loc);
             }
             else if (op==OpCode::BEQ || op==OpCode::BNE || op==OpCode::BLT || op==OpCode::BLE)

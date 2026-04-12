@@ -96,12 +96,12 @@ if(idx!=-1){
         else if(op == OpCode::J)
         output = imm; 
     }
-    else if(name == UnitType::LOADSTORE){//LW, SW  
+    else if(name == UnitType::LOADSTORE){//LW, SW  forwarding needs to be added in get ready entry.
         if(op == OpCode::LW)
         output = memory[src1 + imm]; 
         else if(op == OpCode::SW){
-            memory[dest+imm] = src1;
-            output = memory[dest + imm];
+            memory[src2 + imm] = src1; // the real execution.
+            output = memory[src2 + imm]; // a formality. No instruction has an ROB tag corresponding to a store.
         }       
     }
     else{//(name == UnitType::LOGIC)  SLT, SLTI, AND, OR, XOR, ANDI, ORI, XORI  IMMEDIATE HANDLING IS AGAIN NECESSARY.

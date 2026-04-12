@@ -1,5 +1,5 @@
 addi x1, x0, 1
-addi x2, x0, 2
-beq x1, x2, end
-addi x3, x0, 99
+j end
+addi x1, x1, 99
 end:
+addi x2, x0, 5

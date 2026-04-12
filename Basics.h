@@ -24,7 +24,7 @@ struct ProcessorConfig {
     int mul_lat = 4;
     int div_lat = 5;
     int mem_lat = 4;
-//branch laency is adder latency
+// branch latency is adder latency
     int logic_rs_size = 4;
     int adder_rs_size = 4;
     int mult_rs_size = 2;

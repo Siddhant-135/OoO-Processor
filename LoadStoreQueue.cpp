@@ -18,10 +18,10 @@ int LoadStoreQueue::get_valid_entry(){
         if(!RS_stage_vector[i].valid){
             return -1;
         }
-        else if(RS_stage_vector[i].stage==-1 && RS_stage_vector[i].rs_entry.op==OpCode::LW && RS_stage_vector[i].rs_entry.src1_valid){ // Othere field is immediate, they are always valid.
+        else if(RS_stage_vector[i].stage==-1 && RS_stage_vector[i].rs_entry.op==OpCode::LW && RS_stage_vector[i].rs_entry.src1_valid){ // Othere field is immediate, it is always valid.
             return i;
         }
-        else if(RS_stage_vector[i].stage==-1 && RS_stage_vector[i].rs_entry.op==OpCode::SW && RS_stage_vector[i].rs_entry.src1_valid && RS_stage_vector[i].rs_entry.dest_valid){ // Othere field is immediate, they are always valid.
+        else if(RS_stage_vector[i].stage==-1 && RS_stage_vector[i].rs_entry.op==OpCode::SW && RS_stage_vector[i].rs_entry.src1_valid && RS_stage_vector[i].rs_entry.src2_valid){ // Othere field is immediate, always valid.
             return i;
         }
     }
