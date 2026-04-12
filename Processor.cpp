@@ -128,6 +128,7 @@ void Processor::stageDecode() {
         myROB.set_branch_prediction(rob_tag, D_reg.bp_info);
         RSEntry temp_rs_entry;
         temp_rs_entry.ROB_Entry = rob_tag;
+        temp_rs_entry.dispatch_seq = dispatch_counter++;
         temp_rs_entry.op = D_reg.inst.op;
     
         if (D_reg.inst.src1 < 0) temp_rs_entry.src1_valid = true; // is this causing error for the BEQ case? Should not be so

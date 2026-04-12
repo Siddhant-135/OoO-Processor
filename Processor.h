@@ -24,6 +24,7 @@ private:
 public:
     int pc;
     int clock_cycle;
+    int dispatch_counter = 0; // monotonic counter for oldest-first RS dispatch
     bool flushed_this_cycle = false;
 
     // pipeline registers

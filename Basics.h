@@ -54,6 +54,7 @@ struct RSEntry {
     int src1_tag = -1, src2_tag = -1, src1_value = -1, src2_value = -1;
     int imm_value = 0, dest_value = -1;
     int ROB_Entry = -1;
+    int dispatch_seq = 0;  // monotonically increasing, for oldest-first RS dispatch
     int mem_addr = -1;
     int mem_val = 0;
     OpCode op = OpCode::ADD;
