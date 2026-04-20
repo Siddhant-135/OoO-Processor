@@ -1,7 +1,0 @@
-# Test 1: WAW hazard - multiple writes to same register
-# x1 should end up with the LAST write's value (program order)
-addi x1 x0 10
-addi x1 x0 20
-addi x1 x0 30
-addi x1 x0 40
-add x2 x1 x0

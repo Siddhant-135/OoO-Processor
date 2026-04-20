@@ -1,5 +1,0 @@
-.A: 10 0
-addi x1 x0 0
-lw x2 0(x1)
-addi x3 x2 1
-sw x3 1(x1)

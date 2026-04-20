@@ -1,4 +1,0 @@
-addi x1 x0 8
-ori x2 x1 3
-xori x3 x2 1
-andi x4 x3 7

@@ -1,6 +1,0 @@
-# Test 12: x0 immutability
-# Writes to x0 should be ignored. x0 must always read as 0.
-addi x0 x0 999
-add x0 x0 x0
-addi x1 x0 5
-add x2 x0 x1

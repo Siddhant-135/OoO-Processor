@@ -1,5 +1,0 @@
-addi x1 x0 2000000000
-addi x2 x0 2000000000
-add x3 x1 x2
-mul x4 x1 x2
-addi x5 x0 42

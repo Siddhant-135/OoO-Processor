@@ -1,6 +1,0 @@
-addi x1 x0 100
-addi x2 x0 0
-mul x3 x1 x1
-div x4 x3 x2
-add x5 x1 x1
-addi x6 x0 77

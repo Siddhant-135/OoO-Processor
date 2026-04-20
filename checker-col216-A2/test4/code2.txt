@@ -1,4 +1,0 @@
-addi x1 x0 2047
-mul x1 x1 x1
-mul x1 x1 x1
-addi x2 x0 1

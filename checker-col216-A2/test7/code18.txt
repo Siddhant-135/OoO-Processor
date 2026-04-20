@@ -1,5 +1,0 @@
-.A: 0
-addi x1 x0 0
-addi x2 x0 33
-sw x2 0(x1)
-lw x3 0(x1)

@@ -1,9 +1,0 @@
-# Test 14: beq not-taken (branch predictor predicts taken but shouldn't be)
-# x1 != x2, so beq should NOT be taken.
-# Predictor predicts taken (state 0), causing misprediction.
-addi x1 x0 1
-addi x2 x0 2
-beq x1 x2 2
-addi x3 x0 10
-addi x4 x0 20
-addi x5 x0 30

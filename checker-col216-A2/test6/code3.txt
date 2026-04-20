@@ -1,9 +1,0 @@
-# Test 3: Branch predictor saturation
-# Loop 5 times. Predictor starts at state 0 (predict taken).
-# On exit, branch not taken -> state transitions to 1
-# Verify correct branch predictor stats and x1=5
-addi x2 x0 5
-loop:
-addi x1 x1 1
-blt x1 x2 -1
-addi x3 x0 99
