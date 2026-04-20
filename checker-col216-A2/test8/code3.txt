@@ -1,0 +1,7 @@
+addi x1 x0 -5
+addi x2 x0 3
+slt x3 x1 x2
+slti x4 x1 0
+andi x5 x2 7
+ori x6 x1 8
+xori x7 x2 15

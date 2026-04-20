@@ -1,0 +1,3 @@
+# Precise exception: divide by zero; x1 should be committed, x2 untouched
+addi x1 x0 5
+div x2 x1 x0

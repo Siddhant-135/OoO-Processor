@@ -1,0 +1,4 @@
+# Signed multiply overflow → exception; prior register write visible
+addi x1 x0 65536
+addi x2 x0 65536
+mul x3 x1 x2

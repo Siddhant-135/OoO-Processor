@@ -1,0 +1,4 @@
+beq x0 x0 target
+addi x1 x0 99
+target:
+addi x2 x0 1

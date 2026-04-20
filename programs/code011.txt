@@ -1,9 +1,0 @@
-# Test 5: Two SWs to same address, then LW — should get LATEST store's value
-# Expected: x5 = 200 (not 100), memory[0] = 200 after both commit
-.C: 0
-addi x1, x0, 100
-addi x2, x0, 200
-addi x3, x0, 0
-sw x1 C(x3)
-sw x2 C(x3)
-lw x5 C(x3)

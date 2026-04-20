@@ -1,8 +1,0 @@
-# Edge 10: Large offset addressing — access high indices in the memory array
-# Expected: x5 = 7, x6 = 999, memory at M+29 = 999
-.M: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 7
-addi x1, x0, 29
-lw x5 M(x1)
-addi x2, x0, 999
-sw x2 M(x1)
-lw x6 M(x1)

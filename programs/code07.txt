@@ -1,8 +1,0 @@
-# Test 6: SW and LW to different addresses — no forwarding should occur
-# Expected: x5 = 55 (from memory, not from the SW to addr 0), memory[0] = 99
-.D: 99 55
-addi x1, x0, 0
-addi x3, x0, 1
-addi x4, x0, 98
-sw x4 D(x1)
-lw x5 D(x3)

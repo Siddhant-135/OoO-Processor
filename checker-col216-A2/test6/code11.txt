@@ -1,0 +1,10 @@
+# Test 11: Overflow exception on add (precise)
+# INT_MAX = 2147483647. Adding 1 should overflow.
+addi x1 x0 1
+addi x2 x0 1
+# Build up large values: 2^30 = 1073741824
+addi x3 x0 1
+mul x3 x3 x3
+addi x4 x0 1073741824
+add x5 x4 x4
+addi x6 x0 77

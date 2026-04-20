@@ -1,9 +1,0 @@
-# Test 2: Basic SW — store a value then verify via memory dump
-# Expected: x1=5, memory[0]=5, memory[1]=10
-.A: 0 0
-addi x1, x0, 5
-addi x2, x0, 0
-sw x1 A(x2)
-addi x2, x0, 1
-addi x3, x0, 10
-sw x3 A(x2)

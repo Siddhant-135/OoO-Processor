@@ -1,8 +1,0 @@
-# Edge 3: Multiple LWs from the same address — structural hazard / contention
-# Expected: x3 = 42, x4 = 42, x5 = 42, x6 = 42 (all load same value)
-.M: 42
-addi x1, x0, 0
-lw x3 M(x1)
-lw x4 M(x1)
-lw x5 M(x1)
-lw x6 M(x1)

@@ -1,0 +1,6 @@
+.D: 5 10 15
+addi x1 x0 0
+addi x2 x0 20
+sw x2 D(x1)
+lw x3 D(x1)
+add x4 x3 x2

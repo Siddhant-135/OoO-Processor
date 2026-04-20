@@ -1,0 +1,7 @@
+# Test 2: Store-to-load forwarding
+# Store a value then immediately load it back before commit
+.A: 0 0 0 0
+addi x1 x0 42
+sw x1 0(x0)
+lw x2 0(x0)
+add x3 x2 x0

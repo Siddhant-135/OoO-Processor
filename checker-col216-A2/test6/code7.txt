@@ -1,0 +1,7 @@
+# Test 7: Unconditional jump
+# Should skip the addi x2 instruction entirely
+addi x1 x0 1
+j 2
+addi x2 x0 999
+addi x3 x0 3
+add x4 x1 x3

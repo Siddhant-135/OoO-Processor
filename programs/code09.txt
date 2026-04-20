@@ -1,8 +1,0 @@
-# Test 4: Store-to-load forwarding — SW and LW to same address with data dependency
-# Expected: x5 = 77 (forwarded from SW to LW without waiting for commit)
-.B: 0
-addi x1, x0, 77
-addi x2, x0, 0
-sw x1 B(x2)
-lw x5 B(x2)
-addi x6, x5, 1

@@ -1,9 +1,0 @@
-# Edge 1: LW/SW using x0 as base — x0 is hardwired to 0
-# Expected: x5 = 99 (store 99 at mem[0], load it back)
-# Also tests that writing to x0 via LW does NOT change x0
-.M: 0
-addi x1, x0, 99
-sw x1 M(x0)
-lw x5 M(x0)
-lw x0 M(x0)
-addi x6, x0, 1

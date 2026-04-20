@@ -1,0 +1,10 @@
+# Long arithmetic dependency chain (OOO should still match sequential)
+addi x1 x0 1
+addi x2 x0 2
+add x3 x1 x2
+mul x4 x3 x3
+sub x5 x4 x1
+addi x6 x5 -100
+mul x7 x6 x2
+div x8 x7 x2
+rem x9 x8 x3

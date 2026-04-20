@@ -1,0 +1,13 @@
+# Test 15: Store to different addresses, load from each
+.D: 0 0 0 0 0
+addi x1 x0 100
+addi x2 x0 200
+addi x3 x0 300
+sw x1 0(x0)
+sw x2 1(x0)
+sw x3 2(x0)
+lw x4 0(x0)
+lw x5 1(x0)
+lw x6 2(x0)
+add x7 x4 x5
+add x8 x7 x6

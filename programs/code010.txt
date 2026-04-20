@@ -1,7 +1,0 @@
-# Test 3: SW then LW — store a value, load it back
-# Expected: x3 = 42 (store 42, then load it back)
-.A: 0
-addi x1, x0, 42
-addi x2, x0, 0
-sw x1 A(x2)
-lw x3 A(x2)

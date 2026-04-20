@@ -1,0 +1,4 @@
+addi x1 x0 2
+addi x2 x0 3
+mul x3 x1 x2
+add x4 x3 x2

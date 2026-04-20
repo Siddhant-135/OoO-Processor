@@ -1,0 +1,8 @@
+# Test 6: Memory out-of-bounds exception (precise)
+# Should commit x1=5, x2=500, then exception on lw at address 1024+500=out of bounds
+.A: 0 0 0 0 0
+addi x1 x0 5
+lw x3 0(x0)
+addi x2 x0 500
+lw x4 500(x2)
+addi x5 x0 77

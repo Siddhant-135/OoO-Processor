@@ -1,0 +1,11 @@
+# Test 9: Multiple store-load pairs to same address (forwarding chain)
+.A: 0 0 0 0
+addi x1 x0 10
+sw x1 0(x0)
+addi x2 x0 20
+sw x2 0(x0)
+lw x3 0(x0)
+addi x4 x0 30
+sw x4 0(x0)
+lw x5 0(x0)
+add x6 x3 x5
