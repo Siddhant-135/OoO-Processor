@@ -1,0 +1,13 @@
+.vscode/
+.env
+.DS_Store
+*.o
+*.out
+main_asan.dYSM/
+main
+checker-col216-A2/test*/
+parser_dump
+
+*
+!*/
+!*.*
